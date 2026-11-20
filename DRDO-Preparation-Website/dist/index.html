@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>GATE ECE Study Desk</title>
+<link rel="stylesheet" href="./style.css">
+<script type="module" src="./app.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="shell">
+  <aside id="sidebar" aria-label="Study navigation">
+    <a class="brand" href="#dashboard"><span class="brand-icon" aria-hidden="true">∿</span><span>GATE ECE<small>STUDY DESK</small></span></a>
+    <nav id="nav"></nav>
+    <a class="official" href="https://gate2027.iitm.ac.in/exam_papers_and_syllabus" target="_blank" rel="noopener">Official GATE syllabus <span aria-hidden="true">↗</span></a>
+  </aside>
+  <div class="workspace">
+    <header class="top"><div><button class="menu" id="menu" aria-label="Toggle navigation" aria-controls="sidebar" aria-expanded="false">☰</button><span id="breadcrumb">Study desk / Dashboard</span></div><div class="theme"><label for="background">Background</label><input id="background" type="color" value="#ffffff" aria-label="Background color"><button id="reset-color" class="small">Reset</button></div></header>
+    <main id="main" tabindex="-1"></main>
+  </div>
+</div>
+<div id="toast" role="status"></div>
+<noscript>Enable JavaScript to open the study sessions.</noscript>
+</body>
+</html>
