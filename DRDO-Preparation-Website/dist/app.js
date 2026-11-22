@@ -2,24 +2,26 @@ import {topics, papers, questions, drills, interview} from './data.js';
 import {formulaBank, lessons, questionPrep, calculations} from './lessons.js';
 import {equationMarkup} from './math.js';
 import {setupTopicStudy} from './topic-study.js';
+import {setupAptitudeStudy,aptitudeQuestions} from './aptitude-study.js';
 
 const routes = {
   dashboard:['⊞','Dashboard'], roadmap:['☷','Roadmap'],
   gate:['◇','GATE PYQs'], isro:['◎','ISRO PYQs'], drdo:['△','DRDO PYQs'], practice:['▷','Additional practice'],
+  aptitude:['✦','Aptitude practice'],
   'topic-lessons':['▤','Topic lessons'], 'topic-quizzes':['✓','Topic quizzes'], 'topic-matching':['⇄','Match the terms'], 'topic-plan':['☷','What to study today'],
   theory:['▤','Theory notes'], formulas:['ƒ','Formula revision'], revision:['↻','Revision session'],
   interview:['◉','Interview prep'], mock:['◷','Mock interview'], progress:['▥','Daily progress']
 };
 const groups = [
   ['Overview',['dashboard','roadmap','progress']],
-  ['Questions',['gate','isro','drdo','practice']],
+  ['Questions',['gate','isro','drdo','practice','aptitude']],
   ['Topic study',['topic-lessons','topic-quizzes','topic-matching','topic-plan']],
   ['Study',['theory','formulas','revision']],
   ['Interview',['interview','mock']]
 ];
 const topicMap = Object.fromEntries(topics.map(topic=>[topic.id,topic]));
 const formulaIndex = Object.fromEntries(Object.entries(formulaBank).map(([topic, formulas]) => [topic, Object.fromEntries(formulas.map(formula => [formula.id, formula]))]));
-const questionMap = Object.fromEntries([...questions,...drills].map(question=>[question.id,question]));
+const questionMap = Object.fromEntries([...questions,...drills,...aptitudeQuestions].map(question=>[question.id,question]));
 const examWindow = ['2027-02-06','2027-02-07','2027-02-13','2027-02-14','2027-02-20','2027-02-21'];
 const examSource = 'https://gate2027.iitm.ac.in/important_dates';
 const storageKey = 'gate-ece-desk-v1';
@@ -36,6 +38,7 @@ const defaultState = {background:'#ffffff',date:'',logs:{},attempts:{},solved:{}
 let state;
 try { state = {...defaultState,...JSON.parse(localStorage.getItem(storageKey) || '{}')}; }
 catch { state = {...defaultState}; }
+const aptitudeStudy=setupAptitudeStudy({state,save,today,escape,explanation:practiceExplanation});
 state.topicStudy={seen:{},answers:{},matches:{},scores:{},...state.topicStudy};
 let active = 'dashboard';
 const filters = {};
@@ -102,7 +105,7 @@ function dashboard() {
     stat('Roadmap progress',completed+' / '+topics.length,'Subjects marked complete')+'</div>'+
     '<div class="two"><section class="card"><h2>Study by exam</h2><div class="actions">'+link('gate','GATE',true)+link('isro','ISRO',true)+link('drdo','DRDO',true)+'</div></section>'+
     '<section class="card"><h2>GATE EC exam date</h2><div class="toolbar"><label class="field">Set the date from your admit card<select id="exam-date"><option value="">Use exam-window opening day</option>'+examWindow.map(d=>'<option value="'+d+'" '+(d===state.date?'selected':'')+'>'+dateLabel(d)+'</option>').join('')+'</select></label></div>'+ext(examSource,'Official GATE 2027 exam dates')+'</section></div>'+
-    '<h2>Continue studying</h2><div class="route-grid">'+routeCard('revision','Revisit saved questions and practice mistakes.')+routeCard('formulas','Review formulas by subject.')+routeCard('progress','Log study time and rate your day.')+'</div>';
+    '<h2>Continue studying</h2><div class="route-grid">'+routeCard('aptitude','200 original aptitude questions and 100 previous GATE questions.')+routeCard('revision','Revisit saved questions and practice mistakes.')+routeCard('formulas','Review formulas by subject.')+routeCard('progress','Log study time and rate your day.')+'</div>';
 }
 
 function paperArchive(exam) {
@@ -213,7 +216,7 @@ function revision() {
     (ids.length?'<div class="stack">'+ids.map(id=>{
       const item=questionMap[id];
       return item.exam ? questionCard(item) :
-        '<article class="card"><p class="meta">'+topicMap[item.topic].name+(state.wrong[id]?' · Practice mistake':'')+'</p><h2>'+escape(item.prompt)+'</h2>'+
+        '<article class="card"><p class="meta">'+topicMap[item.topic].name+(state.wrong[id]?' · Practice mistake':'')+'</p><h2>'+escape(item.prompt)+'</h2>'+aptitudeStudy.source(item)+
         '<details class="theory"><summary>Reveal answer</summary><p><strong>'+escape(item.choices[item.key])+'</strong></p>'+practiceExplanation(item.why)+'</details>'+
         '<div class="actions">'+(state.wrong[id]?button('clear-wrong','Mark reviewed',true,'data-id="'+id+'"'):'')+
         (state.saved[id]?button('save-item','Remove bookmark',true,'data-id="'+id+'"'):'')+'</div></article>';
@@ -276,7 +279,7 @@ function mockPage() {
 }
 
 const topicStudy=setupTopicStudy(main,{state,save,today,escape});
-const pages={'topic-lessons':topicStudy.render,'topic-quizzes':topicStudy.render,'topic-matching':topicStudy.render,'topic-plan':topicStudy.render,dashboard,roadmap,progress,gate:()=>pyq('gate'),isro:()=>pyq('isro'),drdo:()=>pyq('drdo'),practice,theory:()=>studyPage(false),formulas:()=>studyPage(true),revision,interview:interviewPage,mock:mockPage};
+const pages={aptitude:aptitudeStudy.render,'topic-lessons':topicStudy.render,'topic-quizzes':topicStudy.render,'topic-matching':topicStudy.render,'topic-plan':topicStudy.render,dashboard,roadmap,progress,gate:()=>pyq('gate'),isro:()=>pyq('isro'),drdo:()=>pyq('drdo'),practice,theory:()=>studyPage(false),formulas:()=>studyPage(true),revision,interview:interviewPage,mock:mockPage};
 function draw() {
   for(const link of nav.querySelectorAll('a')) {
     if (link.hash==='#'+active) link.setAttribute('aria-current','page');
@@ -310,6 +313,7 @@ document.querySelector('#menu').addEventListener('click',event=>{
 
 main.addEventListener('change',event=>{
   const el=event.target;
+  if(aptitudeStudy.handleChange(el)){draw();document.getElementById(el.id)?.focus();return;}
   if (el.id==='topic-filter') {filters[active]=el.value;if(active==='practice') newPractice();draw();document.querySelector('#topic-filter')?.focus();}
   if (el.id==='exam-date') {state.date=el.value;save();draw();document.querySelector('#exam-date')?.focus();}
   if (el.dataset.road) {updateFlag(state.done,el.dataset.road,true);draw();document.getElementById(el.id)?.focus();}
@@ -326,6 +330,7 @@ main.addEventListener('click',event=>{
   const el=event.target.closest('button[data-action]');
   if (!el) return;
   const id=el.dataset.id;
+  if(aptitudeStudy.handleClick(el)){draw();return;}
   switch(el.dataset.action) {
     case 'save-item': updateFlag(state.saved,id,true);break;
     case 'solved': updateFlag(state.solved,id,today());break;

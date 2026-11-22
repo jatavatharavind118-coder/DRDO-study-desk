@@ -36,6 +36,20 @@ node scripts/check-practice.mjs
 
 The checks cover subject counts, unique IDs and prompts, choices and explanation integrity, numerical integration, sampled-waveform equivalence, circuit conservation, and selected device/control consistency conditions.
 
+## Dedicated aptitude practice
+
+Open `#aptitude` from the sidebar or dashboard. Its two banks contain 200 original GATE-style questions and 100 genuine GA PYQs, with topic/year filters, first-attempt accuracy, saved answers, question navigation, bookmarks and worked solutions. Original material includes numerical variants and authored verbal/analytical problems. The separate 1,000-question subject bank is retained.
+
+PYQs identify year, session, question number, source PDF page and answer key. The 2016 GA4 odd-one-out question accepts either officially allowed MCQ answer; the 2025 marks-to-all question is excluded. Original question artwork is supplied as SVG crops from the existing source papers, preserving vector paths and source raster samples. Full-size artwork and untouched PDF pages remain available for zooming. Existing image/PDF files are not recompressed, replaced or resampled.
+
+```sh
+node scripts/generate-aptitude-practice.mjs
+node scripts/check-aptitude.mjs
+node scripts/check-practice.mjs
+```
+
+Artwork extraction is a maintenance-only step using PyMuPDF. Export `aptitudePyqs` to JSON and pass that file to `python scripts/extract-aptitude-artwork.py`. It opens original PDFs read-only and produces only the new SVG assets.
+
 ## Upload to GitHub
 
 Target repository: https://github.com/jatavatharavind118-coder/DRDO-study-desk

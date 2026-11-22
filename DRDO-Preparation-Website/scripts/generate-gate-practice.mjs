@@ -1,8 +1,10 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
+import {pathToFileURL} from 'node:url';
 
 // Original parameterised exam-style problems; these are not official GATE PYQs.
 // Six numerical instances in each of fifteen problem families per subject.
+export function generateGatePractice(start=1,end=6){
 const bank=[];
 const fmt=n=>Number(n.toFixed(4)).toString();
 const log2=n=>Math.log2(n);
@@ -16,7 +18,7 @@ function add(topic,family,k,prompt,value,unit,wrong,concept,steps,check){
     why:[`Principle: ${concept}`,...steps.map((s,i)=>`Step ${i+1}: ${s}`),`Answer: ${answer}.`,`Check and interpretation: ${check}`].join('\n\n'),
     family,level:'GATE-style',format:'Original MCQ'});
 }
-for(let k=1;k<=6;k++){
+for(let k=start;k<=end;k++){
   // Engineering Mathematics: algebra, probability, transforms and calculus.
   {
     const a=k+1,b=k+3,trace=a+b,det=a*b;
@@ -672,7 +674,7 @@ for(let k=1;k<=6;k++){
 }
 
 // Additional families broaden each subject beyond repeated substitution exercises.
-for(let k=1;k<=6;k++){
+for(let k=start;k<=end;k++){
   {
     const p=.01*k,sensitivity=.9,falseAlarm=.05,ans=p*sensitivity/(p*sensitivity+(1-p)*falseAlarm);
     add('math','bayes-detector',k,`A fault occurs with probability ${fmt(p)}. A detector reports positive with probability 0.9 when faulty and 0.05 when healthy. Given a positive report, find the probability of a fault.`,ans,'',[.9,p,.9*p],
@@ -1095,6 +1097,11 @@ for(let k=1;k<=6;k++){
   }
 }
 
+return bank;
+}
+
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
+const bank=generateGatePractice();
 assert.equal(bank.length,900);
 assert.equal(new Set(bank.map(q=>q.prompt)).size,900);
 for(const q of bank){
@@ -1107,3 +1114,4 @@ fs.writeFileSync(new URL('../dist/practice-bank.js',import.meta.url),
   '// Original GATE-style practice variants, generated reproducibly by scripts/generate-gate-practice.mjs.\n'+
   'export const additionalPractice = '+JSON.stringify(bank,null,2)+';\n');
 console.log(`Generated and validated ${bank.length} additional practice questions.`);
+}
