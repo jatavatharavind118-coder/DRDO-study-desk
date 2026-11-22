@@ -79,7 +79,7 @@ export function setupExamSeries(main,{state,save,escape,section,ext,archiveLink,
         <form data-series-retry="${test.id}" data-question="${index}">
           <fieldset><legend>New answer</legend>${answerField(item,index,'')}</fieldset>
           <div class="actions"><button type="submit" class="btn">Check answer</button>
-          <button type="reset" class="btn secondary">Clear answer</button></div>
+          <button type="reset" class="btn secondary">Erase</button></div>
           <p role="status" data-retry-result></p>
         </form></details>`:''}
       ${result==='Awarded'?'<p>Marks awarded to all candidates.</p>':
@@ -133,6 +133,7 @@ export function setupExamSeries(main,{state,save,escape,section,ext,archiveLink,
         <div class="card exam-toolbar">
           <strong>Time left <span data-series-clock="${test.id}"></span></strong>
           ${button('Submit test','finish',test.id)}
+          ${test.manual?'<button type="button" class="btn secondary" data-clear-notes>Erase</button>':''}
           ${test.paper?paperLink(test):''}
         </div>
         <p class="sub">${test.manual?'Open the paper alongside this test and enter your numbered answers for manual review.':
@@ -144,7 +145,7 @@ export function setupExamSeries(main,{state,save,escape,section,ext,archiveLink,
           ${item.prompt?`<p>${escape(item.prompt)}</p>`:''}
           ${item.kind==='MSQ'?'<p class="sub">Select all that apply.</p>':''}
           ${answerField(item,index,attempt.answers[index])}
-          ${item.key!=='MTA'?'<div class="actions"><button type="button" class="btn secondary" data-clear-answer>Clear answer</button></div>':''}
+          ${item.key!=='MTA'?'<div class="actions"><button type="button" class="btn secondary" data-clear-answer>Erase</button></div>':''}
         </fieldset>`).join('')}</form>`}`;
   }
 
@@ -181,9 +182,10 @@ export function setupExamSeries(main,{state,save,escape,section,ext,archiveLink,
     save();
   });
   main.addEventListener('click',event=>{
-    const clear=event.target.closest('[data-clear-answer]');
+    const clear=event.target.closest('[data-clear-answer],[data-clear-notes]');
     if (clear) {
-      const fields=clear.closest('fieldset').querySelectorAll('[data-answer]');
+      const container=clear.hasAttribute('data-clear-notes')?main.querySelector('[data-series-form]'):clear.closest('fieldset');
+      const fields=container.querySelectorAll('[data-answer]');
       for (const field of fields) {
         if (field.type==='checkbox'||field.type==='radio') field.checked=false;
         else field.value='';

@@ -118,6 +118,7 @@ export function setupTopicStudy(main, {state,save,today,escape}) {
       (selected===correct?'Correct':'Correct answer')+'</strong> '+escape(correct)+'<p>'+escape(reason)+'</p></div>':'')+
       '<div class="actions">'+(submitted&&pending>=0?'<a class="btn" href="'+routeFor(pending)+'">Next unanswered question</a>':
       submitted?'':'<button type="submit" class="btn">Check answer</button>')+
+      '<button class="btn secondary" type="button" data-course-action="erase-quiz">Erase</button>'+
       action('topic-lessons',subject,index,'Read this topic’s theory')+'</div></form>'+
       pager(mode,subject,index)+'</article>'+indexList(selection)+'</div>';
   }
@@ -159,7 +160,7 @@ export function setupTopicStudy(main, {state,save,today,escape}) {
       }).join('')+'</div>'+
       (checked?'<p class="answer-line" role="status"><strong>'+score+' of '+total+' correct</strong></p>':'')+
       '<div class="actions"><button class="btn" type="submit">Check matches</button>'+
-      (checked?'<button type="button" data-course-action="reset-matches" class="btn secondary">Reset exercise</button>':'')+
+      '<button type="button" data-course-action="reset-matches" class="btn secondary">Erase</button>'+
       action('topic-lessons',subject,index,'Review this subject')+'</div></form></article>';
   }
 
@@ -198,7 +199,7 @@ export function setupTopicStudy(main, {state,save,today,escape}) {
   main.addEventListener('click',event=>{
     const trigger=event.target.closest('[data-course-action]');
     if (!trigger) return;
-    const {subject,key}=current();
+    const {subject,key,questions,answers,questionIndex}=current();
     let focus='[data-course-action="study"]';
     if (trigger.dataset.courseAction==='study') {
       if (progress.seen[key]) delete progress.seen[key];
@@ -208,6 +209,14 @@ export function setupTopicStudy(main, {state,save,today,escape}) {
       save();
       const next=destination('topic-quizzes',subject,current().index);
       if (location.hash!==next) {location.hash=next;return;}
+      focus='[data-course-form="quiz"] input';
+    } else if (trigger.dataset.courseAction==='erase-quiz') {
+      const quiz=questions[questionIndex];
+      if (Object.hasOwn(answers,quiz.id)) {
+        delete answers[quiz.id];
+        delete progress.scores[key];
+        delete state.attempts[today()]?.['topic-'+key+(quiz.id==='base'?'':'-'+quiz.id)];
+      }
       focus='[data-course-form="quiz"] input';
     } else {
       delete progress.matches[subject.id];

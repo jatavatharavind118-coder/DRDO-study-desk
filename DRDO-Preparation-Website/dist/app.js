@@ -47,6 +47,7 @@ const filters = {};
 let practiceSession = [];
 let practiceIndex = 0;
 let practiceAnswer = null;
+let practiceSelection = null;
 let mock = null;
 let showMockResults = false;
 let mockClock;
@@ -197,6 +198,7 @@ function newPractice() {
   practiceSession=shuffle(drills.filter(matchTopic));
   practiceIndex=0;
   practiceAnswer=null;
+  practiceSelection=null;
 }
 function practice() {
   if (!practiceSession.length) newPractice();
@@ -207,7 +209,9 @@ function practice() {
     '<div class="toolbar">'+topicSelect(active)+'<span class="meta">'+practiceSession.length+' questions in this selection</span>'+button('restart-practice','Shuffle questions',true)+'</div>'+
     '<article class="card review-card"><p class="meta">'+topicMap[item.topic].name+' · '+(item.level||'Core concept')+' · '+(practiceIndex+1)+' of '+practiceSession.length+'</p>'+
     '<h2>'+escape(item.prompt)+'</h2><div class="choices">'+item.choices.map((option,i)=>
-       '<button type="button" class="choice '+(judged&&i===item.key?'correct':judged&&selected===i?'wrong':'')+'" data-action="choice" data-id="'+i+'" '+(judged?'disabled':'')+'>'+String.fromCharCode(65+i)+'. '+escape(option)+'</button>').join('')+'</div>'+
+       '<button type="button" class="choice '+(judged&&i===item.key?'correct':judged&&selected===i?'wrong':!judged&&practiceSelection===i?'selected':'')+'" aria-pressed="'+(!judged&&practiceSelection===i)+'" data-action="choice" data-id="'+i+'" '+(judged?'disabled':'')+'>'+String.fromCharCode(65+i)+'. '+escape(option)+'</button>').join('')+'</div>'+
+    '<div class="actions">'+button('submit-practice','Submit answer',false,judged||practiceSelection===null?'disabled':'')+
+    button('erase-practice','Erase',true,!judged&&practiceSelection===null?'disabled':'')+'</div>'+
     (judged?'<p class="status '+(selected===item.key?'good':'bad')+'">'+(selected===item.key?'Correct':'Review this one')+'</p><h3>Detailed explanation</h3>'+practiceExplanation(item.why):'')+
     '<div class="actions">'+(judged?button('next-practice',practiceIndex===practiceSession.length-1?'Start another round':'Next question'):'')+
     button('save-item',state.saved[item.id]?'Remove from revision':'Save for revision',true,'data-id="'+item.id+'"')+'</div></article>';
@@ -278,7 +282,7 @@ function mockPage() {
   const i=mock.items[mock.index];
   return header+'<article class="card review-card"><p class="meta">Question '+(mock.index+1)+' of '+mock.items.length+' · <span class="mock-timer" id="mock-clock"></span></p><h2>'+escape(i.prompt)+'</h2><p class="sub">Follow-up · '+escape(i.follow)+'</p>'+
     '<label class="field section">Your answer<textarea id="mock-answer" maxlength="2000">'+escape(mock.responses[mock.index])+'</textarea></label>'+
-    '<div class="actions">'+(mock.index?button('mock-prev','Previous',true):'')+button('mock-next',mock.index===mock.items.length-1?'Finish interview':'Next question')+ (mock.index<mock.items.length-1?button('mock-finish','Finish early',true):'')+'</div></article>';
+    '<div class="actions">'+(mock.index?button('mock-prev','Previous',true):'')+button('mock-next',mock.index===mock.items.length-1?'Finish interview':'Next question')+button('mock-erase','Erase',true)+ (mock.index<mock.items.length-1?button('mock-finish','Finish early',true):'')+'</div></article>';
 }
 
 const topicStudy=setupTopicStudy(main,{state,save,today,escape});
@@ -366,12 +370,27 @@ main.addEventListener('click',event=>{
     case 'restart-practice': newPractice();break;
     case 'next-practice':
       if(practiceIndex+1===practiceSession.length) newPractice();
-      else {practiceIndex++;practiceAnswer=null;}
+      else {practiceIndex++;practiceAnswer=null;practiceSelection=null;}
       break;
-    case 'choice': {
-      if(practiceAnswer!==null) return;
+    case 'choice':
+      if(practiceAnswer===null) practiceSelection=Number(id);
+      break;
+    case 'erase-practice': {
       const item=practiceSession[practiceIndex];
-      practiceAnswer=Number(id);
+      if(practiceAnswer!==null){
+        delete state.attempts[today()]?.[item.id];
+        delete state.wrong[item.id];
+        save();
+      }
+      practiceAnswer=null;
+      practiceSelection=null;
+      break;
+    }
+    case 'submit-practice': {
+      if(practiceAnswer!==null||practiceSelection===null) return;
+      const item=practiceSession[practiceIndex];
+      practiceAnswer=practiceSelection;
+      practiceSelection=null;
       const date=today();
       const right=practiceAnswer===item.key;
       (state.attempts[date]??={})[item.id]=right;
@@ -383,6 +402,7 @@ main.addEventListener('click',event=>{
       mock={items:shuffle(interview).slice(0,3),responses:[],index:0,until:Date.now()+300000};
       break;
     case 'show-mock': showMockResults=!showMockResults;break;
+    case 'mock-erase': if(mock) mock.responses[mock.index]='';break;
     case 'mock-prev': if(mock) mock.index--;break;
     case 'mock-next':
       if(mock&&mock.index+1<mock.items.length) mock.index++;
@@ -391,6 +411,13 @@ main.addEventListener('click',event=>{
     case 'mock-finish': if(mock) finishMock();break;
   }
   draw();
+  const focusAfterAnswer={
+    choice:'[data-action="choice"][aria-pressed="true"]',
+    'submit-practice':'[data-action="erase-practice"]',
+    'erase-practice':'[data-action="choice"]',
+    'mock-erase':'#mock-answer'
+  }[el.dataset.action];
+  if (focusAfterAnswer) main.querySelector(focusAfterAnswer)?.focus();
 });
 window.addEventListener('hashchange',route);
 route();

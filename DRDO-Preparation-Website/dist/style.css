@@ -159,10 +159,10 @@
   align-items: flex-start;
 }
 
-.apt-review .choice.selected {
+.review-card .choice.selected {
   border-color: var(--blue);
   background: #e4edff;
 }
-.apt-review .status {
+.review-card .status {
   margin-top: 12px;
 }
