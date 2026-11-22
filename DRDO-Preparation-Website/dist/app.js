@@ -196,12 +196,12 @@ function practice() {
   const item=practiceSession[practiceIndex];
   const selected=practiceAnswer;
   const judged=selected!==null;
-  return section('Additional practice','Solve original questions by topic and check the explanation after each answer.')+
+  return section('Additional practice','Solve 100 original questions across 10 subjects, with formulas, worked calculations and detailed explanations.')+
     '<div class="toolbar">'+topicSelect(active)+button('restart-practice','Shuffle questions',true)+'</div>'+
     '<article class="card review-card"><p class="meta">'+topicMap[item.topic].name+' · '+(practiceIndex+1)+' of '+practiceSession.length+'</p>'+
     '<h2>'+escape(item.prompt)+'</h2><div class="choices">'+item.choices.map((option,i)=>
        '<button type="button" class="choice '+(judged&&i===item.key?'correct':judged&&selected===i?'wrong':'')+'" data-action="choice" data-id="'+i+'" '+(judged?'disabled':'')+'>'+String.fromCharCode(65+i)+'. '+escape(option)+'</button>').join('')+'</div>'+
-    (judged?'<p class="status '+(selected===item.key?'good':'bad')+'">'+(selected===item.key?'Correct':'Review this one')+'</p><p>'+escape(item.why)+'</p>':'')+
+    (judged?'<p class="status '+(selected===item.key?'good':'bad')+'">'+(selected===item.key?'Correct':'Review this one')+'</p><h3>Detailed explanation</h3><p>'+escape(item.why)+'</p>':'')+
     '<div class="actions">'+(judged?button('next-practice',practiceIndex===practiceSession.length-1?'Start another round':'Next question'):'')+
     button('save-item',state.saved[item.id]?'Remove from revision':'Save for revision',true,'data-id="'+item.id+'"')+'</div></article>';
 }
