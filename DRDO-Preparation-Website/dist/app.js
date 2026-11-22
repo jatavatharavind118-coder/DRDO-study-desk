@@ -1,3 +1,4 @@
+import {setupExamSeries} from './exam-series.js';
 import {topics, papers, questions, drills, interview} from './data.js';
 import {formulaBank, lessons, questionPrep, calculations} from './lessons.js';
 import {equationMarkup} from './math.js';
@@ -7,6 +8,7 @@ import {setupAptitudeStudy,aptitudeQuestions} from './aptitude-study.js';
 const routes = {
   dashboard:['⊞','Dashboard'], roadmap:['☷','Roadmap'],
   gate:['◇','GATE PYQs'], isro:['◎','ISRO PYQs'], drdo:['△','DRDO PYQs'], practice:['▷','Additional practice'],
+  'gate-tests':['◷','GATE test series'], 'isro-tests':['◷','ISRO test series'],
   aptitude:['✦','Aptitude practice'],
   'topic-lessons':['▤','Topic lessons'], 'topic-quizzes':['✓','Topic quizzes'], 'topic-matching':['⇄','Match the terms'], 'topic-plan':['☷','What to study today'],
   theory:['▤','Theory notes'], formulas:['ƒ','Formula revision'], revision:['↻','Revision session'],
@@ -14,7 +16,7 @@ const routes = {
 };
 const groups = [
   ['Overview',['dashboard','roadmap','progress']],
-  ['Questions',['gate','isro','drdo','practice','aptitude']],
+  ['Questions',['gate','gate-tests','isro','isro-tests','drdo','practice','aptitude']],
   ['Topic study',['topic-lessons','topic-quizzes','topic-matching','topic-plan']],
   ['Study',['theory','formulas','revision']],
   ['Interview',['interview','mock']]
@@ -159,6 +161,7 @@ function pyq(exam) {
     drdo:'Learn the circuit concepts before working through older Scientist Entry Test questions and browsing RAC preparation sources.'}[exam];
   const byTopic=topics.map(topic=>({topic,items:list.filter(item=>item.topic===topic.id)})).filter(group=>group.items.length);
   return section(routes[exam][1],description)+
+    (exam==='drdo'?'':'<div class="actions">'+link(exam+'-tests',routes[exam+'-tests'][1])+'</div>')+
     '<div class="toolbar">'+topicSelect(exam)+'<span class="meta">'+list.length+' worked question'+(list.length!==1?'s':'')+'</span>'+button('jump-archive','Open full papers',true)+'</div>'+
     (list.length?'<div class="stack">'+byTopic.map(({topic,items})=>'<section class="pyq-topic"><h2>'+topic.name+'</h2><div class="stack">'+items.map(questionCard).join('')+'</div></section>').join('')+'</div>':'<p class="card">Worked questions for that topic aren’t in this section yet. Browse the full papers below.</p>')+
     paperArchive(exam);
@@ -279,7 +282,8 @@ function mockPage() {
 }
 
 const topicStudy=setupTopicStudy(main,{state,save,today,escape});
-const pages={aptitude:aptitudeStudy.render,'topic-lessons':topicStudy.render,'topic-quizzes':topicStudy.render,'topic-matching':topicStudy.render,'topic-plan':topicStudy.render,dashboard,roadmap,progress,gate:()=>pyq('gate'),isro:()=>pyq('isro'),drdo:()=>pyq('drdo'),practice,theory:()=>studyPage(false),formulas:()=>studyPage(true),revision,interview:interviewPage,mock:mockPage};
+const series=setupExamSeries(main,{state,save,escape,section,ext,archiveLink,draw});
+const pages={'gate-tests':()=>series.render('gate'),'isro-tests':()=>series.render('isro'),aptitude:aptitudeStudy.render,'topic-lessons':topicStudy.render,'topic-quizzes':topicStudy.render,'topic-matching':topicStudy.render,'topic-plan':topicStudy.render,dashboard,roadmap,progress,gate:()=>pyq('gate'),isro:()=>pyq('isro'),drdo:()=>pyq('drdo'),practice,theory:()=>studyPage(false),formulas:()=>studyPage(true),revision,interview:interviewPage,mock:mockPage};
 function draw() {
   for(const link of nav.querySelectorAll('a')) {
     if (link.hash==='#'+active) link.setAttribute('aria-current','page');
@@ -288,6 +292,7 @@ function draw() {
   document.querySelector('#breadcrumb').textContent='Study desk / '+routes[active][1];
   document.title=routes[active][1]+' · GATE ECE Study Desk';
   main.innerHTML=pages[active]();
+  series.tick();
   updateClock();
 }
 function route() {

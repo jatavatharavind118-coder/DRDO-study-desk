@@ -119,3 +119,30 @@
 .course-worked-example ol{padding-left:23px}
 .course-worked-example li + li{margin-top:5px}
 .course-worked-example strong{display:inline}
+
+.exam-answer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: 1rem;
+}
+[data-series-form] fieldset {
+  min-width: 0;
+  margin: 0;
+}
+.exam-option {
+  display: block;
+  padding: .35rem 0;
+}
+.exam-option input {
+  vertical-align: middle;
+}
+.exam-toolbar {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+[data-series-clock] {
+  font-variant-numeric: tabular-nums;
+}
