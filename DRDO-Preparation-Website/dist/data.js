@@ -1,3 +1,5 @@
+import {additionalPractice} from './practice-bank.js';
+
 export const topics = [
   ['math','Engineering Mathematics','Linear algebra, calculus, differential equations and probability'],
   ['networks','Networks','KCL, KVL, equivalent circuits, transients and AC power'],
@@ -1302,7 +1304,7 @@ export const drills = [
     3,
     "Take an initial value of 100 for convenience. A 20% rise gives 120, and a 20% fall from that new base gives 120×0.8=96. The final value is 4 below the original 100, so the net change is a 4% decrease. The percentages do not cancel because their bases differ."
   ]
-].map(([topic,prompt,choices,key,why],i)=>({id:'p'+i,topic,prompt,choices,key,why}));
+].map(([topic,prompt,choices,key,why],i)=>({id:'p'+i,topic,prompt,choices,key,why})).concat(additionalPractice);
 
 export const interview = [
  ['networks','State the maximum power transfer condition for an AC circuit.','The load must be the complex conjugate of the Thévenin impedance.','Explain what happens to the reactive parts and to the load resistance.'],

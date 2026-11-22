@@ -31,6 +31,7 @@ const today = () => {
 };
 const dateLabel = date => displayDate.format(new Date(date+'T00:00:00Z'));
 const escape = str => String(str ?? '').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const practiceExplanation = why => '<div class="worked-solution">'+String(why).split('\n\n').map(paragraph=>'<p>'+escape(paragraph)+'</p>').join('')+'</div>';
 const defaultState = {background:'#ffffff',date:'',logs:{},attempts:{},solved:{},done:{},saved:{},mocks:[],wrong:{}};
 let state;
 try { state = {...defaultState,...JSON.parse(localStorage.getItem(storageKey) || '{}')}; }
@@ -196,12 +197,12 @@ function practice() {
   const item=practiceSession[practiceIndex];
   const selected=practiceAnswer;
   const judged=selected!==null;
-  return section('Additional practice','Solve 100 original questions across 10 subjects, with formulas, worked calculations and detailed explanations.')+
-    '<div class="toolbar">'+topicSelect(active)+button('restart-practice','Shuffle questions',true)+'</div>'+
-    '<article class="card review-card"><p class="meta">'+topicMap[item.topic].name+' · '+(practiceIndex+1)+' of '+practiceSession.length+'</p>'+
+  return section('Additional practice','100 questions per subject · 1,000 total. Practise core concepts and original GATE-style numerical problems with detailed worked solutions. Numerical answers are rounded to four decimal places unless stated otherwise. These include numerical variants; official past questions are in GATE PYQs.')+
+    '<div class="toolbar">'+topicSelect(active)+'<span class="meta">'+practiceSession.length+' questions in this selection</span>'+button('restart-practice','Shuffle questions',true)+'</div>'+
+    '<article class="card review-card"><p class="meta">'+topicMap[item.topic].name+' · '+(item.level||'Core concept')+' · '+(practiceIndex+1)+' of '+practiceSession.length+'</p>'+
     '<h2>'+escape(item.prompt)+'</h2><div class="choices">'+item.choices.map((option,i)=>
        '<button type="button" class="choice '+(judged&&i===item.key?'correct':judged&&selected===i?'wrong':'')+'" data-action="choice" data-id="'+i+'" '+(judged?'disabled':'')+'>'+String.fromCharCode(65+i)+'. '+escape(option)+'</button>').join('')+'</div>'+
-    (judged?'<p class="status '+(selected===item.key?'good':'bad')+'">'+(selected===item.key?'Correct':'Review this one')+'</p><h3>Detailed explanation</h3><p>'+escape(item.why)+'</p>':'')+
+    (judged?'<p class="status '+(selected===item.key?'good':'bad')+'">'+(selected===item.key?'Correct':'Review this one')+'</p><h3>Detailed explanation</h3>'+practiceExplanation(item.why):'')+
     '<div class="actions">'+(judged?button('next-practice',practiceIndex===practiceSession.length-1?'Start another round':'Next question'):'')+
     button('save-item',state.saved[item.id]?'Remove from revision':'Save for revision',true,'data-id="'+item.id+'"')+'</div></article>';
 }
@@ -213,7 +214,7 @@ function revision() {
       const item=questionMap[id];
       return item.exam ? questionCard(item) :
         '<article class="card"><p class="meta">'+topicMap[item.topic].name+(state.wrong[id]?' · Practice mistake':'')+'</p><h2>'+escape(item.prompt)+'</h2>'+
-        '<details class="theory"><summary>Reveal answer</summary><p><strong>'+escape(item.choices[item.key])+'</strong></p><p>'+escape(item.why)+'</p></details>'+
+        '<details class="theory"><summary>Reveal answer</summary><p><strong>'+escape(item.choices[item.key])+'</strong></p>'+practiceExplanation(item.why)+'</details>'+
         '<div class="actions">'+(state.wrong[id]?button('clear-wrong','Mark reviewed',true,'data-id="'+id+'"'):'')+
         (state.saved[id]?button('save-item','Remove bookmark',true,'data-id="'+id+'"'):'')+'</div></article>';
     }).join('')+'</div>':'<div class="card"><p>Saved questions and practice mistakes will appear here.</p><div class="actions">'+link('gate','Browse questions')+link('practice','Start practice',true)+'</div></div>');
