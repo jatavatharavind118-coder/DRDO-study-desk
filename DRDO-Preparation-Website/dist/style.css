@@ -146,3 +146,15 @@
 [data-series-clock] {
   font-variant-numeric: tabular-nums;
 }
+
+.exam-catalog {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 1rem;
+}
+.exam-catalog .card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+}

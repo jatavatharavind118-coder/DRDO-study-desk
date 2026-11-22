@@ -1,3 +1,4 @@
+import {examArchive} from './exam-archive.js';
 import {papers} from './data.js';
 import {additionalPractice} from './practice-bank.js';
 
@@ -56,13 +57,14 @@ export const examSeries = {
       const marks=(number<=5||(number>=11&&number<=35))?1:2;
       return {number,kind,marks,key,penalty:kind==='MCQ'?marks/3:0};
     })
-  },...practiceSets('gate',[1,2].flatMap(version=>gateTopics.map(topic=>
+  },...examArchive.gate,...practiceSets('gate',[1,2].flatMap(version=>gateTopics.map(topic=>
     additionalPractice.find(item=>item.topic===topic&&item.id.endsWith('-'+version)))),9,24)],
-  isro: [{
-    id:'isro-2025-a', title:'October 2025 official Electronics paper · Series A', minutes:120,
+  isro: [examArchive.isro[0],{
+    id:'isro-2025-a', title:'October 2025 official Electronics paper · Series A', minutes:120, technicalScore:true,
+    notice:'The final key excludes Q44, Q49 and Q82.',
     paper:{...papers.isro[0],answer:'https://www.isro.gov.in/media_isro/pdf/recruitmentNotice/2026/May/ELECTRONICS_revised_answer_key_15052026.pdf'},
     items:isroKeys.map((key,index)=>({
       number:index+1,kind:'MCQ',marks:index<80?1:0,penalty:index<80?0.33:0,key
     })).filter(item=>item.key!=='X')
-  },...practiceSets('isro',isroPractice,6,9)]
+  },...examArchive.isro.slice(1),...practiceSets('isro',isroPractice,6,9)]
 };
