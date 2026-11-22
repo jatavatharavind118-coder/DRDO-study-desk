@@ -156,25 +156,35 @@ export function setupTopicStudy(main, {state,save,today,escape}) {
       (index+1<subject.topics.length?action(mode,subject,index+1,'Next topic'):'')+'</div>';
   }
 
-  function conceptTerms(subject,index) {
+  function lessonSentences(text) {
+    return Array.from(sentenceSegments.segment(text),({segment})=>segment.trim()).filter(Boolean);
+  }
+
+  function list(items,tag='ul') {
+    return '<'+tag+'>'+items.map(item=>'<li>'+escape(item)+'</li>').join('')+'</'+tag+'>';
+  }
+
+  function conceptTerms(subject,index,theory) {
     const terms=topicChecks[subject.id][index];
     const examples=conceptExamples[subject.id][index];
-    const details=subject.id==='digital'&&index===2?digitalCodeDetails:null;
+    const detailed=subject.id==='digital'&&index===2?digitalCodeDetails:null;
+    const sentences=lessonSentences(theory);
     return '<section aria-label="Concept map terms"><h3>Concept map explained</h3><ol class="course-theory">'+
       terms.map(([term,meaning],i)=>{
-        if(!details) return '<li><p><strong>'+escape(term)+'</strong><br>'+escape(meaning)+
-          '<br><strong>Example.</strong> '+escape(examples[i])+'</p></li>';
-        const [explanation,steps]=details[term];
-        return '<li><h4>'+escape(term)+'</h4><ul>'+
-          explanation.map(point=>'<li>'+escape(point)+'</li>').join('')+
-          '</ul><p><strong>Worked example</strong></p><ol>'+
-          steps.map(step=>'<li>'+escape(step)+'</li>').join('')+'</ol></li>';
+        const label=term.toLowerCase();
+        const supporting=sentences.find(sentence=>{
+          const normalized=sentence.toLowerCase();
+          return normalized!==meaning.toLowerCase() && normalized.includes(label);
+        });
+        const explanation=detailed?.[term]?.[0]??[meaning,...(supporting?[supporting]:[])];
+        const steps=detailed?.[term]?.[1]??lessonSentences(examples[i]);
+        return '<li><h4>'+escape(term)+'</h4>'+list(explanation)+
+          '<p><strong>Worked example</strong></p>'+list(steps,'ol')+'</li>';
       }).join('')+'</ol></section>';
   }
 
   function theoryPoints(theory) {
-    return '<h3>Theory, step by step</h3><ul class="course-theory">'+
-      Array.from(sentenceSegments.segment(theory),({segment})=>'<li>'+escape(segment.trim())+'</li>').join('')+'</ul>';
+    return '<h3>Theory, step by step</h3><div class="course-theory">'+list(lessonSentences(theory))+'</div>';
   }
 
   function visual(subject,index,key) {
@@ -187,7 +197,7 @@ export function setupTopicStudy(main, {state,save,today,escape}) {
     const {mode,subject,index,topic,key}=selection;
     const seen=Object.hasOwn(progress.seen,key);
     const visuals=visual(subject,index,key);
-    const terms=conceptTerms(subject,index);
+    const terms=conceptTerms(subject,index,topic.theory);
     const starter=lessonStarters[subject.id]?.[index];
     const introduction=starter?'<p><strong>Start here.</strong> '+escape(starter)+'</p>':'';
     const content=key==='network-1'
