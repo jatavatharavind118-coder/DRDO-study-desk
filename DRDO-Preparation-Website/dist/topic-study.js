@@ -1,7 +1,54 @@
 import {curriculum} from './topic-curriculum.js';
 import {topicChecks} from './topic-checks.js';
+import {conceptExamples} from './concept-examples.js';
 import {electricalFundamentals} from './electrical-fundamentals.js';
 import {topicKey,getQuestions,scoreQuiz,mastery,studyReport} from './topic-progress.js';
+
+const sentenceSegments = new Intl.Segmenter('en', {granularity:'sentence'});
+const lessonStarters = {
+  "devices": [
+    "Every material is made of atoms. Here we look at which energy levels electrons can occupy when many atoms form a solid."
+  ],
+  "analog": [
+    "An analog circuit works with voltages or currents that can vary smoothly. Here we start by turning a voltage that changes polarity into an output that keeps one polarity."
+  ],
+  "digital": [
+    "Digital circuits represent information with symbols such as 0 and 1. Before working with gates, learn how to read numbers written with those symbols."
+  ],
+  "signals": [
+    "A signal is a record of a quantity that changes. Think of a microphone voltage measured continuously, or its recorded values listed one sample at a time.",
+    "These five building blocks let you describe what happens at a specific instant and what a signal does before and after it.",
+    "Imagine sliding, stretching, or flipping a drawing on graph paper. Changing the time argument moves the features. Multiplying outside the argument changes their height.",
+    "A system is a rule that turns an input into an output. Test one property at a time by asking what changes if you add inputs, shift them, or use a bounded input.",
+    "An impulse is a mathematical stand-in for a very short input. For a linear time-invariant system, its response lets you construct the output for much more complicated inputs.",
+    "One waveform can contain several rates of oscillation. Fourier analysis describes how much of each frequency is present and how its peaks line up.",
+    "The Laplace transform rewrites a time waveform in a form that makes decay, growth, and circuit equations easier to analyze.",
+    "The Z-transform does for numbered samples what the Laplace transform does for many continuous-time signals. It turns a one-sample delay into simple multiplication.",
+    "Sampling is like taking snapshots at regular intervals. If you take them too far apart, a fast change can look like a slower one.",
+    "Correlation measures how well two waveforms line up when one is shifted. A spectrum describes how their energy or power is distributed over frequency."
+  ],
+  "dsp": [
+    "Digital signal processing works with a list of samples. We begin by asking what happens to those samples when viewed by frequency instead of by time."
+  ],
+  "control": [
+    "A control system tries to make a physical quantity follow a command. A thermostat is an example: it compares room temperature with a target and responds to the difference."
+  ],
+  "comm": [
+    "Communication sends information from one place to another. A message can travel directly at its original frequencies or be shifted onto a carrier for transmission."
+  ],
+  "em": [
+    "Electric and magnetic fields describe how charges and currents affect the space around them. A changing field can also produce another field."
+  ],
+  "antennas": [
+    "An antenna connects a circuit to waves traveling through space. A radiation pattern shows the directions in which it sends the most or least power."
+  ],
+  "embedded": [
+    "A processor follows instructions stored in memory. Its registers hold values in use, its arithmetic unit operates on those values, and its control unit coordinates the steps."
+  ],
+  "measure": [
+    "Every measurement has limits. Start by separating how close a reading is to the true value from how consistently the instrument repeats it."
+  ]
+};
 
 const labels = {
   'topic-lessons':'Topic lessons',
@@ -65,23 +112,37 @@ export function setupTopicStudy(main, {state,save,today,escape}) {
       (index+1<subject.topics.length?action(mode,subject,index+1,'Next topic'):'')+'</div>';
   }
 
+  function conceptTerms(subject,index) {
+    const terms=topicChecks[subject.id][index];
+    const examples=conceptExamples[subject.id][index];
+    return '<section aria-label="Concept map terms"><h3>Concepts and quick examples</h3><ul class="course-theory">'+
+      terms.map(([term,meaning],i)=>
+        '<li><p><strong>'+escape(term)+'</strong><br>'+escape(meaning)+
+        '<br><strong>Example.</strong> '+escape(examples[i])+'</p></li>').join('')+'</ul></section>';
+  }
+
+  function theoryPoints(theory) {
+    return '<h3>Theory, step by step</h3><ul class="course-theory">'+
+      Array.from(sentenceSegments.segment(theory),({segment})=>'<li>'+escape(segment.trim())+'</li>').join('')+'</ul>';
+  }
+
   function visual(subject,index,key) {
-    const map=topicChecks[subject.id][index];
     return (illustrated.has(key)?'<figure class="topic-figure"><img src="./topic-images/'+key+'.png" loading="lazy" width="980" height="330" alt="'+
       escape(subject.topics[index].title+' — illustrated explanation')+'"><figcaption>'+escape(subject.topics[index].title)+'</figcaption></figure>':'')+
-      '<figure class="topic-map"><figcaption>Concept map <a href="./topic-maps/'+key+'.png" target="_blank" rel="noopener">Open full size</a></figcaption><img class="concept-map-image" src="./topic-maps/'+key+'.png" loading="lazy" width="960" height="540" alt="">'+
-      '<ul class="concept-map-text">'+map.map(([term,meaning])=>
-        '<li><strong>'+escape(term)+'</strong><span>'+escape(meaning)+'</span></li>').join('')+'</ul></figure>';
+      '<figure class="topic-map"><figcaption>Concept map <a href="./topic-maps/'+key+'.png" target="_blank" rel="noopener">Open full size</a></figcaption><img class="concept-map-image" src="./topic-maps/'+key+'.png" loading="lazy" width="960" height="540" alt=""></figure>';
   }
 
   function lesson(selection) {
     const {mode,subject,index,topic,key}=selection;
     const seen=Object.hasOwn(progress.seen,key);
     const visuals=visual(subject,index,key);
+    const terms=conceptTerms(subject,index);
+    const starter=lessonStarters[subject.id]?.[index];
+    const introduction=starter?'<p><strong>Start here.</strong> '+escape(starter)+'</p>':'';
     const content=key==='network-1'
-      ? electricalFundamentals()+visuals
-      : '<p class="course-theory">'+escape(topic.theory)+'</p>'+visuals+
-        '<p class="example-line"><strong>Example</strong> '+escape(topic.example)+'</p>';
+      ? electricalFundamentals()+visuals+terms
+      : introduction+visuals+terms+theoryPoints(topic.theory)+
+        '<p class="example-line"><strong>Worked example</strong> '+escape(topic.example)+'</p>';
     return '<div class="course-body"><article class="card course-card"><p class="meta">Topic '+(index+1)+' of '+subject.topics.length+'</p>'+
       '<h2>'+escape(topic.title)+'</h2>'+content+'<div class="actions">'+
       action('topic-quizzes',subject,index,'Take this topic’s quiz',true)+
