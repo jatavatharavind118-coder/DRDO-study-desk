@@ -158,3 +158,11 @@
   justify-content: space-between;
   align-items: flex-start;
 }
+
+.apt-review .choice.selected {
+  border-color: var(--blue);
+  background: #e4edff;
+}
+.apt-review .status {
+  margin-top: 12px;
+}

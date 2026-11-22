@@ -335,7 +335,13 @@ main.addEventListener('click',event=>{
   const el=event.target.closest('button[data-action]');
   if (!el) return;
   const id=el.dataset.id;
-  if(aptitudeStudy.handleClick(el)){draw();return;}
+  if(aptitudeStudy.handleClick(el)){
+    draw();
+    if (el.dataset.action==='apt-select') main.querySelector('[data-action="apt-select"][aria-pressed="true"]')?.focus();
+    if (el.dataset.action==='apt-erase') main.querySelector('[data-action="apt-select"]')?.focus();
+    if (el.dataset.action==='apt-submit') main.querySelector('[data-action="apt-erase"]')?.focus();
+    return;
+  }
   switch(el.dataset.action) {
     case 'save-item': updateFlag(state.saved,id,true);break;
     case 'solved': updateFlag(state.solved,id,today());break;

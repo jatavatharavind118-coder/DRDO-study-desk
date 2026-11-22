@@ -8,6 +8,7 @@ export function setupAptitudeStudy({state,save,today,escape,explanation}){
  progress.answers??={};progress.positions??={original:0,pyq:0};
  let mode=Object.hasOwn(banks,progress.mode)?progress.mode:'original';
  let category='',year='',order=null;
+ const selections=new Map();
  const correct=(q,answer)=>(q.acceptedKeys||[q.key]).includes(answer);
  const currentList=()=>order||banks[mode].filter(q=>(!category||q.category===category)&&(!year||q.year===Number(year)));
  const reset=()=>{order=null;progress.positions[mode]=0;save();};
@@ -33,11 +34,13 @@ export function setupAptitudeStudy({state,save,today,escape,explanation}){
     '<p class="meta">'+solved.length+' / '+banks[mode].length+' answered · '+right+' correct'+(solved.length?' · '+Math.round(100*right/solved.length)+'% accuracy':'')+'</p>';
   if(!list.length)return header+'<div class="card"><p>No questions match these filters. Choose another aptitude topic or year.</p></div>';
   const index=Math.max(0,Math.min(progress.positions[mode]||0,list.length-1));progress.positions[mode]=index;
-  const q=list[index],answer=progress.answers[q.id],judged=answered(q),keys=q.acceptedKeys||[q.key];
+  const q=list[index],answer=progress.answers[q.id],judged=answered(q),selected=selections.get(q.id),keys=q.acceptedKeys||[q.key];
   return header+'<article class="card review-card apt-review"><p class="meta">'+escape(q.category)+' · '+(mode==='pyq'?'GATE '+q.year+' · '+escape(q.session)+' · Q'+q.number:'Original GATE-style practice')+' · '+(index+1)+' of '+list.length+'</p>'+
    '<h2>'+escape(q.prompt)+'</h2>'+source(q)+
    (mode==='pyq'&&q.sourceImage?'<p class="sub">Read the original question and options above, then select the matching option letter.</p>':'')+
-   '<div class="choices">'+q.choices.map((choice,i)=>'<button type="button" class="choice '+(judged&&keys.includes(i)?'correct':judged&&answer===i?'wrong':'')+'" data-action="apt-answer" data-id="'+i+'" '+(judged?'disabled':'')+'>'+String.fromCharCode(65+i)+'. '+escape(choice)+'</button>').join('')+'</div>'+
+   '<div class="choices">'+q.choices.map((choice,i)=>'<button type="button" class="choice '+(judged&&keys.includes(i)?'correct':judged&&answer===i?'wrong':!judged&&selected===i?'selected':'')+'" aria-pressed="'+(!judged&&selected===i)+'" data-action="apt-select" data-id="'+i+'" '+(judged?'disabled':'')+'>'+String.fromCharCode(65+i)+'. '+escape(choice)+'</button>').join('')+'</div>'+
+   '<div class="actions"><button type="button" class="btn" data-action="apt-submit" '+(judged||selected===undefined?'disabled':'')+'>Submit answer</button>'+
+   '<button type="button" class="btn secondary" data-action="apt-erase" '+(!judged&&selected===undefined?'disabled':'')+'>Erase</button></div>'+
    (judged?'<p class="status '+(correct(q,answer)?'good':'bad')+'">'+(correct(q,answer)?'Correct':'Review this one')+'</p><h3>Detailed explanation</h3>'+explanation(q.why)+(q.keySource?'<p><a href="'+escape(q.keySource)+'" target="_blank" rel="noopener">Check the source answer key</a></p>':''):'')+
    '<div class="actions"><button type="button" class="btn secondary" data-action="apt-prev" '+(index===0?'disabled':'')+'>Previous question</button>'+
    '<button type="button" class="btn" data-action="apt-next" '+(index===list.length-1?'disabled':'')+'>Next question</button>'+
@@ -64,8 +67,20 @@ export function setupAptitudeStudy({state,save,today,escape,explanation}){
    }
    if(action==='apt-prev'&&index>0)progress.positions[mode]--;
    if(action==='apt-next'&&index<list.length-1)progress.positions[mode]++;
-   if(action==='apt-answer'&&q&&!answered(q)){
-     const answer=Number(el.dataset.id);if(!Number.isInteger(answer)||answer<0||answer>3)return true;
+   if(action==='apt-select'&&q&&!answered(q)){
+     const choice=Number(el.dataset.id);
+     if(Number.isInteger(choice)&&choice>=0&&choice<q.choices.length)selections.set(q.id,choice);
+     return true;
+   }
+   if(action==='apt-erase'&&q){
+     selections.delete(q.id);
+     delete progress.answers[q.id];
+     delete state.attempts[today()]?.[q.id];
+     delete state.wrong[q.id];
+   }
+   if(action==='apt-submit'&&q&&!answered(q)&&selections.has(q.id)){
+     const answer=selections.get(q.id);
+     selections.delete(q.id);
      progress.answers[q.id]=answer;
      const right=correct(q,answer);(state.attempts[today()]??={})[q.id]=right;
      if(right)delete state.wrong[q.id];else state.wrong[q.id]=true;
