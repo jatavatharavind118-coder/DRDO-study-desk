@@ -50,6 +50,50 @@ const lessonStarters = {
   ]
 };
 
+const digitalCodeDetails = {
+  "BCD": [
+    [
+      "BCD stands for binary-coded decimal. Decimal is the usual base-ten number system. A bit is one binary digit, either 0 or 1. In standard 8421 BCD, encode each decimal digit separately in four bits with place values 8, 4, 2 and 1.",
+      "The four-bit codes 0000 through 1001 represent the digits 0 through 9. Codes 1010 through 1111 are unused because a single decimal digit cannot exceed 9."
+    ],
+    [
+      "Split decimal 29 into the digits 2 and 9.",
+      "Write 2 as 0010 because its 2-place is on. Write 9 as 1001 because 8 + 1 = 9.",
+      "Join the groups: 0010 1001. Ordinary binary writes 29 as 11101₂ because 16 + 8 + 4 + 1 = 29."
+    ]
+  ],
+  "Gray code": [
+    [
+      "Gray code labels consecutive counts so that exactly one bit changes at a time. In ordinary binary, going from 3 (011) to 4 (100) changes all three bits. A sensor that reads during a transition could briefly capture a mixed value.",
+      "To convert binary to reflected Gray code, copy the leftmost bit. For each remaining Gray bit, compare the two adjacent original binary bits to its left and at its position. Write 1 if they differ and 0 if they match. This comparison is called XOR."
+    ],
+    [
+      "For decimal 3, write 011. Copy 0, compare 0 with 1 to get 1, then compare 1 with 1 to get 0. The Gray code is 010.",
+      "For decimal 4, write 100. Copy 1, compare 1 with 0 to get 1, then compare 0 with 0 to get 0. The Gray code is 110.",
+      "010 and 110 differ only in the leftmost bit."
+    ]
+  ],
+  "Even parity": [
+    [
+      "Even parity adds one extra bit to make the total number of 1s even. Count the 1s in the original data. Append 0 if the count is already even and 1 if it is odd."
+    ],
+    [
+      "Data 1011 contains three 1s, an odd count.",
+      "Append a parity bit of 1. The transmitted word 10111 contains four 1s, an even count."
+    ]
+  ],
+  "Parity detection": [
+    [
+      "The receiver counts the 1s in the entire received word, including the parity bit. If even parity was used, an odd count signals an error. Every single-bit flip changes the count by one, so it always changes parity.",
+      "Any odd number of flips changes parity. An even number can pass the check. A parity mismatch tells you an error occurred, but it cannot tell you which bit to correct."
+    ],
+    [
+      "Start with the valid even-parity word 10111. Flip the first bit to get 00111. The receiver counts three 1s and flags an error.",
+      "Flip the first two bits instead to get 01111. There are four 1s, so the parity check passes even though the data changed."
+    ]
+  ]
+};
+
 const labels = {
   'topic-lessons':'Topic lessons',
   'topic-quizzes':'Topic quizzes',
@@ -115,10 +159,17 @@ export function setupTopicStudy(main, {state,save,today,escape}) {
   function conceptTerms(subject,index) {
     const terms=topicChecks[subject.id][index];
     const examples=conceptExamples[subject.id][index];
-    return '<section aria-label="Concept map terms"><h3>Concepts and quick examples</h3><ul class="course-theory">'+
-      terms.map(([term,meaning],i)=>
-        '<li><p><strong>'+escape(term)+'</strong><br>'+escape(meaning)+
-        '<br><strong>Example.</strong> '+escape(examples[i])+'</p></li>').join('')+'</ul></section>';
+    const details=subject.id==='digital'&&index===2?digitalCodeDetails:null;
+    return '<section aria-label="Concept map terms"><h3>Concept map explained</h3><ol class="course-theory">'+
+      terms.map(([term,meaning],i)=>{
+        if(!details) return '<li><p><strong>'+escape(term)+'</strong><br>'+escape(meaning)+
+          '<br><strong>Example.</strong> '+escape(examples[i])+'</p></li>';
+        const [explanation,steps]=details[term];
+        return '<li><h4>'+escape(term)+'</h4><ul>'+
+          explanation.map(point=>'<li>'+escape(point)+'</li>').join('')+
+          '</ul><p><strong>Worked example</strong></p><ol>'+
+          steps.map(step=>'<li>'+escape(step)+'</li>').join('')+'</ol></li>';
+      }).join('')+'</ol></section>';
   }
 
   function theoryPoints(theory) {
