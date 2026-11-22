@@ -61,6 +61,32 @@ export function setupExamSeries(main,{state,save,escape,section,ext,archiveLink,
     ).join('')+(item.kind==='MCQ'?'<label class="exam-option"><input data-answer type="radio" name="'+name+'" value=""> Skip</label>':'');
   }
 
+  function readAnswer(field) {
+    if (field.type!=='checkbox') return field.value;
+    return Array.from(field.form.elements.namedItem(field.name))
+      .filter(input=>input.checked).map(input=>input.value).join('');
+  }
+
+  function reviewQuestion(test,item,index,result,answer) {
+    const missed=result==='Incorrect'||result==='Skipped';
+    const solution=`<p>${escape(item.choices?item.key+' · '+item.choices['ABCD'.indexOf(item.key)]:item.key.replaceAll(':',' to ').replaceAll('|',' or '))}</p>
+      ${item.why?item.why.split('\n\n').map(part=>`<p>${escape(part)}</p>`).join(''):''}`;
+    return `<article class="card">
+      <h3>Question ${item.number??index+1} · ${result}</h3>
+      ${item.prompt?`<p>${escape(item.prompt)}</p>`:''}
+      <p>Your answer: ${escape(answer||'Skipped')}</p>
+      ${missed?`<details><summary>Try again</summary>
+        <form data-series-retry="${test.id}" data-question="${index}">
+          <fieldset><legend>New answer</legend>${answerField(item,index,'')}</fieldset>
+          <div class="actions"><button type="submit" class="btn">Check answer</button>
+          <button type="reset" class="btn secondary">Clear answer</button></div>
+          <p role="status" data-retry-result></p>
+        </form></details>`:''}
+      ${result==='Awarded'?'<p>Marks awarded to all candidates.</p>':
+        `<details><summary>${item.why?'Show answer and worked solution':'Show correct answer'}</summary>${solution}</details>`}
+      </article>`;
+  }
+
   function review(test,attempt) {
     if (test.manual) return `<section class="card"><h2 tabindex="-1" data-series-focus>Review your attempt</h2>
       <p class="sub">Compare your saved answers with the paper and any published key.</p>
@@ -76,14 +102,8 @@ export function setupExamSeries(main,{state,save,escape,section,ext,archiveLink,
       <p><strong>${count} of ${test.items.length} correct</strong> · ${test.technicalScore?'Technical score ':''}${format(marks)} / ${maximum} marks</p>
       ${test.technicalScore?'<p class="sub">Aptitude accuracy: '+aptitudeResults.filter(result=>result==='Correct').length+' / '+aptitudeResults.length+' correct.</p>':''}
       <p>${results.filter(result=>result==='Skipped').length} skipped</p>
-      <div class="actions">${button('Retake test','start',test.id)}${keyLink(test)}</div></section>
-      <div class="stack">${test.items.map((item,index)=>`<article class="card">
-      <h3>Question ${item.number??index+1} · ${results[index]}</h3>
-      ${item.prompt?`<p>${escape(item.prompt)}</p>`:''}
-      <p>Your answer: ${escape(attempt.answers[index]||'Skipped')}</p>
-      <p>Correct answer: ${escape(item.choices?item.key+' · '+item.choices['ABCD'.indexOf(item.key)]:item.key.replaceAll(':',' to ').replaceAll('|',' or '))}</p>
-      ${item.why?`<details><summary>Worked solution</summary>${item.why.split('\n\n').map(part=>`<p>${escape(part)}</p>`).join('')}</details>`:''}
-      </article>`).join('')}</div>`;
+      <div class="actions">${button('Retake test','start',test.id)}${test.paper?paperLink(test):''}${keyLink(test)}</div></section>
+      <div class="stack">${test.items.map((item,index)=>reviewQuestion(test,item,index,results[index],attempt.answers[index])).join('')}</div>`;
   }
 
   function render(exam) {
@@ -124,11 +144,25 @@ export function setupExamSeries(main,{state,save,escape,section,ext,archiveLink,
           ${item.prompt?`<p>${escape(item.prompt)}</p>`:''}
           ${item.kind==='MSQ'?'<p class="sub">Select all that apply.</p>':''}
           ${answerField(item,index,attempt.answers[index])}
+          ${item.key!=='MTA'?'<div class="actions"><button type="button" class="btn secondary" data-clear-answer>Clear answer</button></div>':''}
         </fieldset>`).join('')}</form>`}`;
   }
 
   main.addEventListener('submit',event=>{
-    if (event.target.matches('[data-series-form]')) event.preventDefault();
+    const form=event.target;
+    if (form.matches('[data-series-form]')) event.preventDefault();
+    if (!form.matches('[data-series-retry]')) return;
+    event.preventDefault();
+    const test=allTests.find(item=>item.id===form.dataset.seriesRetry);
+    const item=test.items[Number(form.dataset.question)];
+    const field=form.querySelector('[data-answer]');
+    const answer=field.type==='radio'?form.querySelector('input:checked')?.value:readAnswer(field);
+    const result=grade(item,answer);
+    form.querySelector('[data-retry-result]').textContent=
+      result==='Skipped'?'Enter an answer first.':result==='Correct'?'Correct.':'Incorrect. You can try again.';
+  });
+  main.addEventListener('reset',event=>{
+    if (event.target.matches('[data-series-retry]')) event.target.querySelector('[data-retry-result]').textContent='';
   });
   main.addEventListener('change',event=>{
     const select=event.target;
@@ -139,17 +173,30 @@ export function setupExamSeries(main,{state,save,escape,section,ext,archiveLink,
   });
   main.addEventListener('input',event=>{
     const field=event.target;
-    if (!field.matches('[data-answer]')) return;
+    if (!field.matches('[data-series-form] [data-answer]')) return;
     const test=allTests.find(item=>item.id===field.form.dataset.seriesForm);
     const attempt=current(test);
     if (attempt.until<=Date.now()) {finish(test);draw();return;}
-    const group=field.form.elements.namedItem(field.name);
-    attempt.answers[field.name]=field.type==='checkbox'
-      ? Array.from(group).filter(input=>input.checked).map(input=>input.value).join('')
-      : field.value;
+    attempt.answers[field.name]=readAnswer(field);
     save();
   });
   main.addEventListener('click',event=>{
+    const clear=event.target.closest('[data-clear-answer]');
+    if (clear) {
+      const fields=clear.closest('fieldset').querySelectorAll('[data-answer]');
+      for (const field of fields) {
+        if (field.type==='checkbox'||field.type==='radio') field.checked=false;
+        else field.value='';
+      }
+      const field=fields[0];
+      const test=allTests.find(item=>item.id===field.form.dataset.seriesForm);
+      const attempt=current(test);
+      if (attempt.until<=Date.now()) {finish(test);draw();return;}
+      delete attempt.answers[field.name];
+      save();
+      field.focus();
+      return;
+    }
     const control=event.target.closest('[data-series-action]');
     if (!control) return;
     const test=allTests.find(item=>item.id===control.dataset.test);
