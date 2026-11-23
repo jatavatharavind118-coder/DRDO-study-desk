@@ -1,3 +1,6 @@
+import {expandedPyqs} from './pyq-expanded.js';
+import {isro2025Complete} from './isro-2025-complete.js';
+import {gate2026Additional} from './gate-2026-complete.js';
 import {additionalPractice} from './practice-bank.js';
 
 export const topics = [
@@ -102,6 +105,17 @@ export const questions = [
  q('d08-4','drdo','networks','DRDO SET 2008 · Q4 · memory-based','drdo.pdf',1,'A series R–L circuit has R = 10 Ω and L = 20 mH. At 500 rad/s, how does its current phase compare with its voltage phase?','Current lags voltage by 45° · option A',['Inductive reactance is 500 × 0.020 = 10 Ω.','The impedance angle is tan⁻¹(10/10) = 45°.','V = IZ, so the voltage leads the current by that angle.']),
  q('d08-6','drdo','networks','DRDO SET 2008 · Q6 · memory-based','drdo.pdf',1,'A Thévenin source has impedance R + jX. What load impedance takes maximum average power?','R − jX · option D',['Match the load resistance to R.','Use load reactance −X to cancel the source reactance.','The resulting load is the complex conjugate of the source impedance.'])
 ];
+
+questions.push(...gate2026Additional);
+for (const item of isro2025Complete) {
+ const index=questions.findIndex(q=>q.id===item.id);
+ if(index>=0) questions[index]={...item,topic:questions[index].topic}; else questions.push(item);
+}
+
+for (const item of expandedPyqs) {
+ const index=questions.findIndex(q=>q.id===item.id);
+ if(index>=0) questions[index]={...item,topic:questions[index].topic}; else questions.push(item);
+}
 
 export const drills = [
   [

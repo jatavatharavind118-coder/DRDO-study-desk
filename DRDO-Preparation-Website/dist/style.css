@@ -166,3 +166,12 @@
 .review-card .status {
   margin-top: 12px;
 }
+
+/* PYQs: keep the question and its worked answer together; theory is opt-in. */
+.question .optional-pyq-theory { border-top:1px solid var(--line); border-bottom:0; }
+.question .optional-pyq-theory > summary { cursor:pointer; font-size:1rem; font-weight:650; }
+.question .optional-pyq-theory[open] > summary { margin-bottom:14px; }
+.question .qa > div { min-width:0; }
+.question .pyq-figure { margin:18px 0; }
+.question .pyq-figure img { display:block; width:100%; height:auto; }
+.question .pyq-figure figcaption { margin-top:6px; font-size:.875rem; color:var(--muted); }

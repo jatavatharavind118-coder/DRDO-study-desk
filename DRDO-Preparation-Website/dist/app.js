@@ -129,6 +129,8 @@ function linkedFormulas(topic, refs) {
 }
 function responsePrompt(response) {
   const {type,choices,unit,places}=response;
+  if(type==='TEXT') return '';
+  if(type==='NAT'&&places===undefined) return '<p class="response-note"><strong>Numerical answer</strong> Use the units and precision requested in the question.</p>';
   if (type==='NAT') {
     return '<p class="response-note"><strong>Numerical answer</strong> Give your answer in '+escape(unit)+
       ', rounded to '+places+' decimal '+(places===1?'place':'places')+'.</p>';
@@ -140,32 +142,31 @@ function responsePrompt(response) {
 }
 function questionCard(q) {
   const topic=topicMap[q.topic];
-  const prep=questionPrep[q.id];
+  const prep=questionPrep[q.id]||{title:topic.name,idea:topic.scope,refs:[],approach:q.steps[0],trap:q.trap};
   const workings=calculations[q.id]||[];
   return '<article class="card question" id="'+q.id+'"><header><h3>'+topic.name+'</h3><span class="meta">'+escape(q.ref)+'</span></header>'+
-    '<section class="question-lesson"><p class="lesson-kicker">Theory before the question</p><h4>'+escape(prep.title)+'</h4><p>'+escape(prep.idea)+'</p>'+
-    linkedFormulas(q.topic,prep.refs)+'<p class="method"><strong>How to start</strong> '+escape(prep.approach)+'</p>'+
-    '<div class="actions">'+button('open-study-topic','Read the full topic notes',true,'data-id="'+q.topic+'" data-route="theory"')+'</div></section>'+
-    '<div class="qa"><div><h4>Question</h4><p>'+escape(q.prompt)+'</p>'+responsePrompt(q.response)+'</div>'+
-    '<div><h4>Worked solution</h4><ol class="solution-steps">'+q.steps.map(step=>'<li>'+escape(step)+'</li>').join('')+'</ol>'+
+
+    '<div class="qa"><div><h4>Question</h4><p>'+escape(q.prompt)+'</p>'+(q.figure?'<figure class="pyq-figure"><a href="'+escape(q.figure)+'" target="_blank" rel="noopener"><img src="'+escape(q.figure)+'" alt="'+escape(q.figureAlt)+'" loading="lazy"></a><figcaption>Question diagram · click to enlarge</figcaption></figure>':'')+responsePrompt(q.response)+'</div>'+
+    '<div><h4>'+(q.unresolved?'Source limitation':q.excluded||q.marksToAll?'Official status and explanation':'Worked solution')+'</h4><ol class="solution-steps">'+q.steps.map(step=>'<li>'+escape(step)+'</li>').join('')+'</ol>'+
     (workings.length?'<div class="solution-math">'+workings.map(equationMarkup).join('')+'</div>':'')+
     '<p class="answer-line"><strong>Final answer</strong> '+escape(q.answer)+'</p>'+
-    '<p class="check-line"><strong>Common mistake</strong> '+escape(prep.trap)+'</p></div></div>'+
-    '<footer>'+ext(archiveLink(q.file)+'#page='+q.page,'Open original PDF')+
+    (prep.trap?'<p class="check-line"><strong>Common mistake</strong> '+escape(prep.trap)+'</p>':'')+(q.reviewNote?'<p class="notice"><strong>Source note:</strong> '+escape(q.reviewNote)+'</p>':'')+'</div></div>'+
+    '<details class="question-lesson optional-pyq-theory"><summary>Theory behind this question</summary><h4>'+escape(prep.title)+'</h4><p>'+escape(prep.idea)+'</p>'+linkedFormulas(q.topic,prep.refs)+'<p><strong>How to start</strong> '+escape(prep.approach)+'</p><div class="actions">'+button('open-study-topic','Read the full topic notes',true,'data-id="'+q.topic+'" data-route="theory"')+'</div></details>'+
+    '<footer>'+ext(archiveLink(q.file)+'#page='+q.page,'Open original PDF')+(q.sources||[]).map(url=>ext(url,'Supporting source')).join('')+
     button('save-item',state.saved[q.id]?'Remove from revision':'Save for revision',true,'data-id="'+q.id+'"')+
     button('solved',state.solved[q.id]?'Solved ✓':'Mark solved',true,'data-id="'+q.id+'"')+'</footer></article>';
 }
 function pyq(exam) {
   const list=questions.filter(q=>q.exam===exam&&matchTopic(q));
-  const description={gate:'Learn the topic and formulas first, then solve the question and compare your steps. Each paraphrased prompt links to its original paper.',
-    isro:'Learn the underlying theory, then work through Scientist/Engineer ‘SC’ Electronics questions with original paper links.',
-    drdo:'Learn the circuit concepts before working through older Scientist Entry Test questions and browsing RAC preparation sources.'}[exam];
-  const byTopic=topics.map(topic=>({topic,items:list.filter(item=>item.topic===topic.id)})).filter(group=>group.items.length);
+  const description='Read each question alongside its step-by-step worked solution. Theory is hidden until you open it; the original PDF is an optional source link.';
+  const pending=list.filter(q=>q.unresolved);
+  const ready=list.filter(q=>!q.unresolved);
+  const byTopic=topics.map(topic=>({topic,items:ready.filter(item=>item.topic===topic.id)})).filter(group=>group.items.length);
   return section(routes[exam][1],description)+
     (exam==='drdo'?'':'<div class="actions">'+link(exam+'-tests',routes[exam+'-tests'][1])+'</div>')+
-    '<div class="toolbar">'+topicSelect(exam)+'<span class="meta">'+list.length+' worked question'+(list.length!==1?'s':'')+'</span>'+button('jump-archive','Open full papers',true)+'</div>'+
+    '<div class="toolbar">'+topicSelect(exam)+'<span class="meta">'+ready.length+' worked question'+(ready.length!==1?'s':'')+(pending.length?' · '+pending.length+' need missing source information':'')+'</span>'+button('jump-archive','Open full papers',true)+'</div>'+
     (list.length?'<div class="stack">'+byTopic.map(({topic,items})=>'<section class="pyq-topic"><h2>'+topic.name+'</h2><div class="stack">'+items.map(questionCard).join('')+'</div></section>').join('')+'</div>':'<p class="card">Worked questions for that topic aren’t in this section yet. Browse the full papers below.</p>')+
-    paperArchive(exam);
+    (pending.length?'<details class="card section"><summary><strong>Questions needing complete source material ('+pending.length+')</strong></summary><p>The supplied memory-based copy omits essential figures or data for these questions. Their exact limitations are shown below.</p><div class="stack">'+pending.map(questionCard).join('')+'</div></details>':'')+paperArchive(exam);
 }
 function studyPage(formula) {
   const title=formula?'Formula revision':'Theory notes';
