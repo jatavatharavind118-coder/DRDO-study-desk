@@ -1158,5 +1158,109 @@
   {
     "path": "dist/pyq-figures/g09-60.png",
     "sha256": "b99b9efc5d814f28ad73cfa373b6decdb014f25a9ba0546f813fda3c3990bfba"
+  },
+  {
+    "path": "dist/pyq-figures/i20-7.svg",
+    "sha256": "77e9d76e2a24dd2e3d38b9ac7e27457428b4b71ae91ae869eaf0062a858a9bbe"
+  },
+  {
+    "path": "dist/pyq-figures/i20-23.svg",
+    "sha256": "d231337b45092be3eaa612f9328f33b4a2a1719b82d06ad4f41a60844710aed3"
+  },
+  {
+    "path": "dist/pyq-figures/i20-24.svg",
+    "sha256": "52266a3256b629fecbdaa78cb0f07b3199b763ee6c16c4fe4470a7f6b9732c47"
+  },
+  {
+    "path": "dist/pyq-figures/i20-25.svg",
+    "sha256": "5735fd4a1b39a19e22768836e495fdeae48ce018200c79e648a7c7c17200196c"
+  },
+  {
+    "path": "dist/pyq-figures/i20-28.svg",
+    "sha256": "75de4e8b772d175dd6193e01e56c54e443c690ebd5cd72c9c578e537151dbf30"
+  },
+  {
+    "path": "dist/pyq-figures/i20-32.svg",
+    "sha256": "8ef465cb9acc4de7e07cac4d788ecf072147d0ec610a3a82939a82acc2f4f477"
+  },
+  {
+    "path": "dist/pyq-figures/i20-35.svg",
+    "sha256": "2f5e5c83429ac89c96c8bed24738f6fa8761f6bf3afe839123e69381f63f44cc"
+  },
+  {
+    "path": "dist/pyq-figures/i20-38.svg",
+    "sha256": "9360eb902c601f07afacc06ba8ef344c4df627c03207c43a283f6beb6562f165"
+  },
+  {
+    "path": "dist/pyq-figures/i20-39.svg",
+    "sha256": "d29ede19d6c89c66a8857cd016f8ea3a94350e28be0c9cd5ec0519cebcc0d6d3"
+  },
+  {
+    "path": "dist/pyq-figures/i20-40.svg",
+    "sha256": "ae80c96c3b2fa86b496a36ac347a8028aa3f408ee151bcc599892bafa12b857c"
+  },
+  {
+    "path": "dist/pyq-figures/i20-41.svg",
+    "sha256": "aba8e55703a827d01caa39419d47b928b2517c5892291fb36984b3bc1e89166f"
+  },
+  {
+    "path": "dist/pyq-figures/i20-42.svg",
+    "sha256": "27650d12af6d12c3b1d0c8e7e3bd5a7c1acda6a8edfad2355f54a8e837978f73"
+  },
+  {
+    "path": "dist/pyq-figures/i20-44.svg",
+    "sha256": "faee82bb280749c4038b85de0e48d3ea9866dae7f46fa0a120fff2d5f4bac68b"
+  },
+  {
+    "path": "dist/pyq-figures/i20-45.svg",
+    "sha256": "b70b2b12339f10088388c63f0bd26e9d01abc77120c0e88995d5deeacf5e83b2"
+  },
+  {
+    "path": "dist/pyq-figures/i20-47.svg",
+    "sha256": "78414a9d10d3342c53db58468d85ee0114093c15f13ae137fdad796986dd2d3f"
+  },
+  {
+    "path": "dist/pyq-figures/i20-49.svg",
+    "sha256": "0349a8420a9a8287ba4375f905446209b1eb2be2bc37cf628d2e6e00325d6e27"
+  },
+  {
+    "path": "dist/pyq-figures/i20-55.svg",
+    "sha256": "e1a1746f399e2b2f1704aeb1fa83ab5513caf9d5db0b48dc6604a2c7b5b169fd"
+  },
+  {
+    "path": "dist/pyq-figures/i20-60.svg",
+    "sha256": "2e6d5d88bb587dc455b4f95078227f143d8ad7156d072f4721c3641a3237f71f"
+  },
+  {
+    "path": "dist/pyq-figures/i20-61.svg",
+    "sha256": "d0708bf7fa15498af5b94b6d9baa15b3367a78218934c18e275873b952bd47fe"
+  },
+  {
+    "path": "dist/pyq-figures/i20-65.svg",
+    "sha256": "8062ffdc1ee2717843dcdbde92e5d7be60647ee40f47b25416f24475bba510cd"
+  },
+  {
+    "path": "dist/pyq-figures/i20-69.svg",
+    "sha256": "7ab7fc7a56b35525988b1aeeb9a5e58323fdfb67ecb3d2c1de8fb7a263544386"
+  },
+  {
+    "path": "dist/pyq-figures/i20-70.svg",
+    "sha256": "202a7806ee7e1bd21a60690c742ed4a016800210cb68da5b8ffe0e3aead59c02"
+  },
+  {
+    "path": "dist/pyq-figures/i20-71.svg",
+    "sha256": "039d02a9f3451d456bd7b0f41255464c941ba57e8b821241caf786cb9007bb27"
+  },
+  {
+    "path": "dist/pyq-figures/i20-75.svg",
+    "sha256": "1b91a5937db050d8e36635a224abdd5a79d7d631bd5ecd59f46442adb3b242a9"
+  },
+  {
+    "path": "dist/pyq-figures/i20-79.svg",
+    "sha256": "59383d20faf483bdabbfffeaa3834d64a30bd9555e255d0f88382cf357b007bd"
+  },
+  {
+    "path": "dist/pyq-figures/i20-80.svg",
+    "sha256": "59b5507f7fe1b89c7cee54b8d59a34b78d106696a4937509578f78d12817981a"
   }
 ]
