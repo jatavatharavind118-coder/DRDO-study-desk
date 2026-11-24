@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import {questions} from '../dist/data.js';
 const root=new URL('../dist/',import.meta.url);
 assert.equal(new Set(questions.map(q=>q.id)).size,questions.length);
-for(const [prefix,total] of [['g08-',85],['g16s1-',65],['g16s2-',65],['g16s3-',65],['g17s1-',65],['g17s2-',65],['i24-',95]]){
+for(const [prefix,total] of [['g07-',85],['g08-',85],['g16s1-',65],['g16s2-',65],['g16s3-',65],['g17s1-',65],['g17s2-',65],['i24-',95]]){
  const rows=questions.filter(q=>q.id.startsWith(prefix));assert.equal(rows.length,total,prefix);
  for(let number=1;number<=total;number++){
   const q=rows.find(q=>q.number===number);assert(q,`Missing ${prefix}${number}`);
@@ -30,4 +30,12 @@ assert(Math.abs(10*Math.log10(10+9/10+9/100)-10.410)<.001);
 assert(Math.abs((1.2**2-1)*100-44)<1e-10);
 assert.equal(155**2,24025);
 assert.equal(2500/(100**2+150**2)*100,7.6923076923076925);
-console.log('Passed 505 new Q&A entries: counts, numbering, source PDFs, figures, withdrawal status, and independent convolution, Boolean and numerical checks.');
+console.log('Passed 590 new Q&A entries: counts, numbering, source PDFs, figures, withdrawal status, and independent convolution, Boolean and numerical checks.');
+
+// GATE 2007: independently check the minimized Boolean function and R–2R voltages.
+for(let bits=0;bits<16;bits++){
+ const a=(bits>>3)&1,b=(bits>>2)&1,c=(bits>>1)&1,d=bits&1;
+ assert.equal(Boolean((!a&&b&&c&&!d)||(!b&&!c&&d)||(a&&b&&!c&&!d)),[1,6,9,12].includes(bits));
+}
+assert.equal((300-50)/(300+50),5/7);
+assert.equal((5/20000+1.25/20000)*10000,3.125);

@@ -1,3 +1,4 @@
+import {gate2007Complete} from './gate-2007-complete.js';
 import {gate2008Complete} from './gate-2008-complete.js';
 import {isro2024Complete} from './isro-2024-complete.js';
 import {gate2016To2017} from './gate-2016-2017-complete.js';
@@ -116,7 +117,7 @@ for (const item of isro2025Complete) {
  if(index>=0) questions[index]={...item,topic:questions[index].topic}; else questions.push(item);
 }
 
-for (const item of [...expandedPyqs,...gate2018To2019,...gate2016To2017,...isro2024Complete,...gate2008Complete]) {
+for (const item of [...expandedPyqs,...gate2018To2019,...gate2016To2017,...isro2024Complete,...gate2008Complete,...gate2007Complete]) {
  const index=questions.findIndex(q=>q.id===item.id);
  if(index>=0) questions[index]={...item,topic:questions[index].topic}; else questions.push(item);
 }
