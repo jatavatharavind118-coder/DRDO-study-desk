@@ -1,3 +1,4 @@
+import {gate2018To2019} from './gate-2018-2019-complete.js';
 import {expandedPyqs} from './pyq-expanded.js';
 import {isro2025Complete} from './isro-2025-complete.js';
 import {gate2026Additional} from './gate-2026-complete.js';
@@ -112,7 +113,7 @@ for (const item of isro2025Complete) {
  if(index>=0) questions[index]={...item,topic:questions[index].topic}; else questions.push(item);
 }
 
-for (const item of expandedPyqs) {
+for (const item of [...expandedPyqs,...gate2018To2019]) {
  const index=questions.findIndex(q=>q.id===item.id);
  if(index>=0) questions[index]={...item,topic:questions[index].topic}; else questions.push(item);
 }
