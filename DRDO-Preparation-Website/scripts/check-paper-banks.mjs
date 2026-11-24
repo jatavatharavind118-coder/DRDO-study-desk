@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import {questions} from '../dist/data.js';
 const root=new URL('../dist/',import.meta.url);
 assert.equal(new Set(questions.map(q=>q.id)).size,questions.length);
-for(const [prefix,total] of [['g07-',85],['g08-',85],['g16s1-',65],['g16s2-',65],['g16s3-',65],['g17s1-',65],['g17s2-',65],['i24-',95]]){
+for(const [prefix,total] of [['g09-',60],['g07-',85],['g08-',85],['g16s1-',65],['g16s2-',65],['g16s3-',65],['g17s1-',65],['g17s2-',65],['i24-',95]]){
  const rows=questions.filter(q=>q.id.startsWith(prefix));assert.equal(rows.length,total,prefix);
  for(let number=1;number<=total;number++){
   const q=rows.find(q=>q.number===number);assert(q,`Missing ${prefix}${number}`);
@@ -30,7 +30,7 @@ assert(Math.abs(10*Math.log10(10+9/10+9/100)-10.410)<.001);
 assert(Math.abs((1.2**2-1)*100-44)<1e-10);
 assert.equal(155**2,24025);
 assert.equal(2500/(100**2+150**2)*100,7.6923076923076925);
-console.log('Passed 590 new Q&A entries: counts, numbering, source PDFs, figures, withdrawal status, and independent convolution, Boolean and numerical checks.');
+console.log('Passed 650 new Q&A entries: counts, numbering, source PDFs, figures, withdrawal status, and independent convolution, Boolean and numerical checks.');
 
 // GATE 2007: independently check the minimized Boolean function and R–2R voltages.
 for(let bits=0;bits<16;bits++){
@@ -39,3 +39,15 @@ for(let bits=0;bits<16;bits++){
 }
 assert.equal((300-50)/(300+50),5/7);
 assert.equal((5/20000+1.25/20000)*10000,3.125);
+
+// GATE 2009: compute DFT and display logic independently.
+const seq=[1,0,2,3];
+const dft=seq.map((_,k)=>seq.reduce((z,v,n)=>[z[0]+v*Math.cos(2*Math.PI*k*n/4),z[1]-v*Math.sin(2*Math.PI*k*n/4)],[0,0]));
+for(const [k,expected]of [[6,0],[-1,3],[0,0],[-1,-3]].entries())for(let i=0;i<2;i++)assert(Math.abs(dft[k][i]-expected[i])<1e-12);
+const masks=['abcdef','acdfg','abdeg','adefg'];
+for(let p=0;p<2;p++)for(let q=0;q<2;q++){
+ const actual={a:1,b:!q,c:!p,d:1,e:p||!q,f:!p||q,g:p||q};
+ for(const segment of 'abcdefg')assert.equal(Boolean(actual[segment]),masks[2*p+q].includes(segment));
+}
+assert(Math.abs(10*Math.log10(16000)-42.0412)<.0001);
+assert(Math.abs((4+Math.sqrt(3)/2)-(5-(1-Math.sqrt(3)/2)))<1e-12);

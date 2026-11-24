@@ -1074,5 +1074,89 @@
   {
     "path": "dist/pyq-figures/g07-84.png",
     "sha256": "40f3f3337d61ef1c4c63ac63e8104d7a001d2e8caf67268b2c3ec033f75e8b5e"
+  },
+  {
+    "path": "dist/pyq-figures/g09-8.png",
+    "sha256": "26cd48c1746653491bb7a31f5f5f6625ae0c74c63b0593b6eea2b94abc8f4434"
+  },
+  {
+    "path": "dist/pyq-figures/g09-12.png",
+    "sha256": "709d1294fbce8c68720ebc2be0d1c73fca1beb02561e28ad26bff5b5fc338551"
+  },
+  {
+    "path": "dist/pyq-figures/g09-14.png",
+    "sha256": "f247db6e3a41f5b3edfae71da6b4d1686873c52a60df58c8a3201136712bc535"
+  },
+  {
+    "path": "dist/pyq-figures/g09-20.png",
+    "sha256": "1333fe2c885b9ade049121515727f416cf5e77e1ddb209d1aef57bb3a2a49038"
+  },
+  {
+    "path": "dist/pyq-figures/g09-28.png",
+    "sha256": "9e54ab6db1ee7bc06fe7d589d0d3ad87410dd4ed0e2601ddf6c818a37e777d61"
+  },
+  {
+    "path": "dist/pyq-figures/g09-29.png",
+    "sha256": "6702f30409a3b9dd3ab6239c7f2afaa33a70670a48d304ef4c37cb3ac6e2a275"
+  },
+  {
+    "path": "dist/pyq-figures/g09-31.png",
+    "sha256": "ad8d066d2e55e8757f32e83a831232d21723b02a4826fb38157a5eebc3dca00e"
+  },
+  {
+    "path": "dist/pyq-figures/g09-33.png",
+    "sha256": "877ac9b7f169e9af8f5fca15078f1442ec3ffdd9a53ba55588afc78c87253451"
+  },
+  {
+    "path": "dist/pyq-figures/g09-34.png",
+    "sha256": "812ebec4d7e1a00620cb143c37f589cce8990ac05d5bed5cfba31b6fd270b582"
+  },
+  {
+    "path": "dist/pyq-figures/g09-35.png",
+    "sha256": "8ba70e3cd267ec730bf1281b9d71e08532011a9364e7d3678201ca499090c6c6"
+  },
+  {
+    "path": "dist/pyq-figures/g09-38.png",
+    "sha256": "910db555fa7c0a387c082a6d3c135a2ca49574193fb7d5a444cb3ab99866309e"
+  },
+  {
+    "path": "dist/pyq-figures/g09-39.png",
+    "sha256": "863c475043986fc49dee94b0c92948a6c452ca3d1be17ca4bc204b7ec57a106a"
+  },
+  {
+    "path": "dist/pyq-figures/g09-41.png",
+    "sha256": "c4babe735bb0d550a989025cdf2931580755e58061e7a3bcf4f234bc27a1b009"
+  },
+  {
+    "path": "dist/pyq-figures/g09-43.png",
+    "sha256": "be6fa9d45b9d4b083cc8280152c8e702124c95575292e2cf73a08edbdabe4c4e"
+  },
+  {
+    "path": "dist/pyq-figures/g09-50.png",
+    "sha256": "bea008f9833518fc4eb0cda3cb2b286469baa1ae77c70d93a7a6e4bfaf8e1c2d"
+  },
+  {
+    "path": "dist/pyq-figures/g09-53.png",
+    "sha256": "e0c6d7fc34c0af4eac1cea64e8111cb7fd5584fc769ebbd8bc79e238be11c75d"
+  },
+  {
+    "path": "dist/pyq-figures/g09-54.png",
+    "sha256": "e0c6d7fc34c0af4eac1cea64e8111cb7fd5584fc769ebbd8bc79e238be11c75d"
+  },
+  {
+    "path": "dist/pyq-figures/g09-57.png",
+    "sha256": "b9969f6ed209f80cf38c43b9c3dcbd92715ce7e76fb9f0a80fce32b10927489f"
+  },
+  {
+    "path": "dist/pyq-figures/g09-58.png",
+    "sha256": "b9969f6ed209f80cf38c43b9c3dcbd92715ce7e76fb9f0a80fce32b10927489f"
+  },
+  {
+    "path": "dist/pyq-figures/g09-59.png",
+    "sha256": "b99b9efc5d814f28ad73cfa373b6decdb014f25a9ba0546f813fda3c3990bfba"
+  },
+  {
+    "path": "dist/pyq-figures/g09-60.png",
+    "sha256": "b99b9efc5d814f28ad73cfa373b6decdb014f25a9ba0546f813fda3c3990bfba"
   }
 ]
