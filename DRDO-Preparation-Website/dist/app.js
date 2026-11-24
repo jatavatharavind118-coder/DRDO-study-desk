@@ -2,7 +2,7 @@ import {workedSolutionMarkup,questionContextMarkup,finalAnswerMarkup} from './wo
 import {examArchive} from './exam-archive.js';
 import {setupExamSeries} from './exam-series.js';
 import {topics, papers, questions, drills, interview} from './data.js';
-import {formulaBank, lessons, questionPrep, calculations} from './lessons.js';
+import {formulaBank, lessons, questionPrep, calculations} from './lessons.js?v=20261124-formulas';
 import {equationMarkup} from './math.js';
 import {setupTopicStudy} from './topic-study.js';
 import {setupAptitudeStudy,aptitudeQuestions} from './aptitude-study.js';
@@ -122,8 +122,9 @@ function paperArchive(exam) {
     : exam==='gate' ? '<p class="sub">'+ext('https://gate2026.iitg.ac.in/download.html','Official GATE archive and available answer keys')+'</p>' : '';
   return '<details class="card section" id="paper-archive"><summary><strong>Full paper archive ('+papers[exam].length+')</strong></summary><ul class="paper-list">'+papers[exam].map(item=>'<li><strong>'+escape(item.name)+'</strong><span>'+ext(archiveLink(item.file),'Question paper')+(item.answer?ext(archiveLink(item.answer),'Answer key'):'')+'</span></li>').join('')+'</ul>'+additional+'</details>';
 }
+let formulaSearch='';
 function formulaCard(formula, compact=false) {
-  return '<article class="formula-card'+(compact?' compact':'')+'"><h4>'+escape(formula.title)+'</h4>'+
+  return '<article class="formula-card'+(compact?' compact':'')+'" data-formula-search="'+escape([formula.title,formula.category||'',formula.equation,formula.symbols,formula.when,formula.example].join(' ').toLowerCase())+'"><h4>'+escape(formula.title)+'</h4>'+
     equationMarkup(formula.equation)+
     '<dl class="definition-list"><div><dt>Symbols</dt><dd>'+escape(formula.symbols)+'</dd></div>'+
     '<div><dt>When to use it</dt><dd>'+escape(formula.when)+'</dd></div>'+
@@ -202,23 +203,39 @@ function pyq(exam) {
     (list.length?'<div class="stack">'+byTopic.map(({topic,items})=>'<section class="pyq-topic"><h2>'+topic.name+'</h2><div class="stack">'+items.map(questionCard).join('')+'</div></section>').join('')+'</div>':'<p class="card">No worked solutions match this paper and topic yet. Choose another paper or open the source paper below.</p>')+
     (pending.length?'<details class="card section"><summary><strong>Questions needing complete source material ('+pending.length+')</strong></summary><p>The supplied memory-based copy omits essential figures or data for these questions. Their exact limitations are shown below.</p><div class="stack">'+pending.map(questionCard).join('')+'</div></details>':'')+paperArchive(exam);
 }
+function formulaCatalog(topic) {
+  const groups=new Map();
+  for(const item of formulaBank[topic.id]){const name=item.category||'Core formulas';if(!groups.has(name))groups.set(name,[]);groups.get(name).push(item);}
+  return '<div class="formula-catalog">'+[...groups].map(([name,items])=>'<section class="formula-chapter"><h3>'+escape(name)+' <span class="meta">'+items.length+'</span></h3><div class="formula-grid revision-formulas">'+items.map(item=>formulaCard(item)).join('')+'</div></section>').join('')+'</div>';
+}
+function applyFormulaSearch(){
+  if(active!=='formulas')return;
+  const terms=formulaSearch.toLowerCase().trim().split(/\s+/).filter(Boolean);
+  const cards=[...main.querySelectorAll('.formula-catalog .formula-card')];let visible=0;
+  for(const card of cards){card.hidden=!terms.every(term=>card.dataset.formulaSearch.includes(term));if(!card.hidden)visible++;}
+  for(const chapter of main.querySelectorAll('.formula-chapter'))chapter.hidden=![...chapter.querySelectorAll('.formula-card')].some(card=>!card.hidden);
+  for(const topic of main.querySelectorAll('.study-topic'))topic.hidden=![...topic.querySelectorAll('.formula-card')].some(card=>!card.hidden);
+  const count=main.querySelector('#formula-count');if(count)count.textContent=visible+' / '+cards.length+' formula cards';
+  const empty=main.querySelector('#formula-empty');if(empty)empty.hidden=visible!==0;
+}
 function studyPage(formula) {
   const title=formula?'Formula revision':'Theory notes';
-  const instructions=formula?'Each equation includes its symbols, when to use it, and a quick substitution.':'Study each concept, connect it to the equations, and check your understanding with a worked example.';
+  const instructions=formula?'Revise the ECE formula collection by subject and chapter. Each card explains its symbols, conditions and a quick example. Search by formula name, concept or symbol.':'Study each concept, connect it to the equations, and check your understanding with a worked example.';
   const selected=topics.filter(t=>!currentTopic(active)||currentTopic(active)===t.id);
   const total=selected.reduce((count,topic)=>count+(formula?formulaBank[topic.id]:lessons[topic.id]).length,0);
-  return section(title,instructions)+'<div class="toolbar">'+topicSelect(active)+'<span class="meta">'+total+(formula?' formulas':' lessons')+'</span></div>'+
+  return section(title,instructions)+'<div class="toolbar">'+topicSelect(active)+'<span class="meta"'+(formula?' id="formula-count" role="status" aria-live="polite"':'')+'>'+total+(formula?' formula cards':' lessons')+'</span></div>'+
+    (formula?'<div class="formula-search"><label for="formula-search">Find a formula</label><input id="formula-search" type="search" placeholder="Search, e.g. MOSFET, Fourier, BER or waveguide" value="'+escape(formulaSearch)+'"><p class="meta">Choose All topics to search every subject. Hz and rad/s conventions, peak/RMS values and model assumptions are stated on the cards.</p></div><p id="formula-empty" class="card" hidden>No matching formulas in this subject. Try a shorter term or choose All topics.</p>':'')+
     '<div class="stack study-topics">'+selected.map(topic=>
       '<section class="card study-topic"><header><h2>'+topic.name+'</h2><p class="sub">'+topic.scope+'</p></header>'+
       (formula
-        ? '<div class="formula-grid revision-formulas">'+formulaBank[topic.id].map(item=>formulaCard(item)).join('')+'</div>'
+        ? formulaCatalog(topic)
         : '<div class="chapter-list">'+lessons[topic.id].map(({title,explanation,refs,worked,check})=>
           '<article class="lecture"><h3>'+escape(title)+'</h3><p>'+escape(explanation)+'</p>'+
           '<details class="theory lesson-formulas"><summary>Key formulas for this lesson ('+refs.length+')</summary>'+linkedFormulas(topic.id,refs)+'</details>'+
           '<p class="example-line"><strong>Worked example</strong> '+escape(worked)+'</p>'+
           '<p class="check-line"><strong>Common mistake</strong> '+escape(check)+'</p></article>').join('')+'</div>')+
       '<div class="actions">'+(formula?button('open-study-topic','Read theory notes',true,'data-id="'+topic.id+'" data-route="theory"'):button('open-study-topic','Open formula revision',true,'data-id="'+topic.id+'" data-route="formulas"'))+
-      button('open-topic','Practice this topic',true,'data-id="'+topic.id+'"')+'</div></section>').join('')+'</div>';
+      button('open-topic','Practice this topic',true,'data-id="'+topic.id+'"')+'</div></section>').join('')+'</div>'+(formula?'<p class="meta formula-scope">Coverage: Engineering Mathematics, Networks, Signals, Devices, Analog, Digital, Control, Communications, Electromagnetics and quantitative aptitude. <a href="https://gate2027.iitm.ac.in/static/doc/GATE2027_Syllabus/EC_GATE2027_Syllabus.pdf" target="_blank" rel="noopener">Official EC syllabus</a>. A card may contain several related equations; stated assumptions take precedence over a memorized shortcut.</p>':'');
 }
 
 function shuffle(list) {
@@ -331,6 +348,7 @@ function draw() {
   document.querySelector('#breadcrumb').textContent='Study desk / '+routes[active][1];
   document.title=routes[active][1]+' · GATE ECE Study Desk';
   main.innerHTML=pages[active]();
+  applyFormulaSearch();
   series.tick();
   updateClock();
 }
@@ -363,7 +381,7 @@ main.addEventListener('change',event=>{
   if (el.id==='exam-date') {state.date=el.value;save();draw();document.querySelector('#exam-date')?.focus();}
   if (el.dataset.road) {updateFlag(state.done,el.dataset.road,true);draw();document.getElementById(el.id)?.focus();}
 });
-main.addEventListener('input',event=>{if(event.target.id==='mock-answer'&&mock) mock.responses[mock.index]=event.target.value;});
+main.addEventListener('input',event=>{if(event.target.id==='formula-search'){formulaSearch=event.target.value;applyFormulaSearch();return;}if(event.target.id==='mock-answer'&&mock) mock.responses[mock.index]=event.target.value;});
 main.addEventListener('submit',event=>{
   if(event.target.id!=='log-form') return;
   event.preventDefault();

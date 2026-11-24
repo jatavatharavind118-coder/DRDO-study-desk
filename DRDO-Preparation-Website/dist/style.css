@@ -198,3 +198,6 @@
 .question:has(.display-equation) .qa{grid-template-columns:1fr}
 .question:has(.display-equation) .qa>div+div{border-left:0;border-top:1px solid var(--line)}
 .question:has(.display-equation) .worked-explanation{max-width:90ch;margin-inline:auto}
+
+/* Expanded formula revision: scoped to the formula catalog. */
+.formula-search{margin:0 0 22px;max-width:820px}.formula-search label{display:block;font-weight:750;margin-bottom:7px}.formula-search input{width:100%;padding:12px 14px;border:1px solid #cbd7ea;border-radius:9px;background:#fff;color:var(--ink);font:inherit}.formula-search input:focus{outline:3px solid #9bb5ff;outline-offset:2px}.formula-search .meta{margin-top:8px}.formula-chapter{margin-top:25px}.formula-chapter h3{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}.formula-catalog .formula-card{padding:17px}.formula-catalog .formula-card h4{font-size:1.02rem}.formula-catalog .equation{padding:13px 9px;margin:13px 0}.formula-catalog .equation math{font-size:1.12rem}.formula-scope{margin-top:24px;line-height:1.7}.formula-catalog [hidden],.study-topics>.study-topic[hidden],#formula-empty[hidden]{display:none!important}

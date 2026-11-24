@@ -1,3 +1,4 @@
+import {expandedFormulaBank} from './formulas-expanded.js';
 const formula = (id, title, equation, symbols, when, example) => ({id, title, equation, symbols, when, example});
 const chapter = (title, explanation, refs, worked, check) => ({title, explanation, refs, worked, check});
 
@@ -251,3 +252,6 @@ lessons.comm[0].refs.push('ofdma');
 lessons.comm[2].refs.push('efficiency');
 lessons.em[0].refs.push('plane','skin');
 lessons.apt[0].refs.push('interest','ratios');
+
+// Preserve existing formula IDs used by lessons and question explanations.
+for (const [topic, entries] of Object.entries(expandedFormulaBank)) formulaBank[topic].push(...entries);
