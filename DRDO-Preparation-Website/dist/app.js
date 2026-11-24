@@ -1,10 +1,10 @@
 import {enhancedExam,examTextMarkup} from './exam-presentation.js';
-import {workedSolutionMarkup,questionContextMarkup,questionPromptMarkup,finalAnswerMarkup} from './worked-solutions.js?v=20261124-exam';
+import {workedSolutionMarkup,questionContextMarkup,questionPromptMarkup,finalAnswerMarkup} from './worked-solutions.js?v=20261124-gate-layout';
 import {examArchive} from './exam-archive.js';
 import {setupExamSeries} from './exam-series.js';
 import {topics, papers, questions, drills, interview} from './data.js';
 import {formulaBank, lessons, questionPrep, calculations} from './lessons.js?v=20261124-formulas';
-import {equationMarkup} from './math.js?v=20261124-exam';
+import {equationMarkup} from './math.js?v=20261124-gate-layout';
 import {setupTopicStudy} from './topic-study.js';
 import {setupAptitudeStudy,aptitudeQuestions} from './aptitude-study.js';
 

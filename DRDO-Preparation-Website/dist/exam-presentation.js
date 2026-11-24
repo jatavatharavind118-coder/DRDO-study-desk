@@ -1,7 +1,7 @@
 import {equationMarkup,inlineEquationMarkup} from './math.js';
 import {examSolutionGuides} from './exam-solution-guides.js';
 const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-export const enhancedExam=q=>q.exam==='isro'||q.exam==='drdo';
+export const enhancedExam=q=>q.exam==='gate'||q.exam==='isro'||q.exam==='drdo';
 const names=new Set(('sin cos tan cot sec csc sinc cosh sinh tanh exp ln log log2 log10 sqrt arctan atan arcsin arccos asin acos det lim Re Im max min abs Q erfc mod sgn '+
  'SNR SINR SQNR BER PSD RMS ROC LSB MSB DC AC RF IF dB dBm dBW Hz kHz MHz GHz rad bit bits '+
  'mA μA nA pA mV μV kV mW μW kW mH μH nH mF μF nF pF kΩ MΩ ms μs ns ps cm mm μm nm eV '+

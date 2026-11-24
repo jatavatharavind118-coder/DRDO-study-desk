@@ -1,4 +1,4 @@
-import {enhancedExam,examGuide,examPromptMarkup,examWorkedSolutionMarkup,examAnswerMarkup} from './exam-presentation.js';
+import {enhancedExam,examGuide,examPromptMarkup,examWorkedSolutionMarkup,examAnswerMarkup,examTextMarkup} from './exam-presentation.js';
 import {equationMarkup,inlineEquationMarkup} from './math.js?v=20261124-exam';
 const escape=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const math=value=>({math:value});
@@ -13,7 +13,7 @@ export const solutionGuides={
   ],answer:'D — Nonlinear and time variant'
  }
 };
-function inline(parts){return (Array.isArray(parts)?parts:[parts]).map(part=>typeof part==='string'?escape(part):inlineEquationMarkup(part.math)).join('');}
+function inline(parts){return (Array.isArray(parts)?parts:[parts]).map(part=>typeof part==='string'?examTextMarkup(part):(part.math?inlineEquationMarkup(part.math):examTextMarkup(part.text))).join('');}
 function block(item){
  if(item.math||item.equation)return '<div class="'+(item.boxed?'boxed-equation':'display-equation')+'">'+equationMarkup(item.math||item.equation)+'</div>';
  if(item.conclusion)return '<p class="step-conclusion"><strong>'+escape(item.conclusion)+'</strong></p>';
@@ -22,9 +22,9 @@ function block(item){
 export function questionPromptMarkup(q){return enhancedExam(q)?examPromptMarkup(q):'<p>'+escape(q.prompt)+'</p>';}
 export function questionContextMarkup(q){const guide=q.solutionGuide||solutionGuides[q.id]||(enhancedExam(q)?examGuide(q):null);return guide?.meaning?'<div class="question-meaning"><h5>What the question asks</h5><p>'+escape(guide.meaning)+'</p></div>':'';}
 export function workedSolutionMarkup(q){
- if(enhancedExam(q))return examWorkedSolutionMarkup(q);
  const guide=q.solutionGuide||solutionGuides[q.id];
+ if(enhancedExam(q)&&!guide)return examWorkedSolutionMarkup(q);
  const sections=guide?.sections||q.steps.map((step,index)=>typeof step==='string'?{title:'Step '+(index+1),blocks:[text(step)]}:step);
- return '<div class="worked-explanation">'+(guide?.setup?'<div class="solution-setup"><h5>Combine the blocks</h5>'+guide.setup.map(block).join('')+'</div>':'')+sections.map((section,index)=>'<section class="solution-section"><h5>'+(guide?(index+1)+') ':'')+escape(section.title)+'</h5>'+section.blocks.map(block).join('')+'</section>').join('')+'</div>';
+ return '<div class="worked-explanation exam-worked-explanation">'+(guide?.setup?'<div class="solution-setup"><h5>Combine the blocks</h5>'+guide.setup.map(block).join('')+'</div>':'')+sections.map((section,index)=>'<section class="solution-section"><h5>'+(guide?(index+1)+') ':'')+escape(section.title)+'</h5>'+section.blocks.map(block).join('')+'</section>').join('')+'</div>';
 }
-export function finalAnswerMarkup(q){const guide=q.solutionGuide||solutionGuides[q.id];const limited=q.unresolved||q.excluded||q.marksToAll;return '<div class="answer-line boxed-final-answer'+(enhancedExam(q)&&limited?' source-status-answer':'')+'"><strong>'+(enhancedExam(q)&&limited?'Answer status':'Final answer')+'</strong><span>'+(enhancedExam(q)?examAnswerMarkup(q):escape(guide?.answer||q.answer))+'</span></div>';}
+export function finalAnswerMarkup(q){const guide=q.solutionGuide||solutionGuides[q.id];const limited=q.unresolved||q.excluded||q.marksToAll;return '<div class="answer-line boxed-final-answer'+(enhancedExam(q)&&limited?' source-status-answer':'')+'"><strong>'+(enhancedExam(q)&&limited?'Answer status':'Final answer')+'</strong><span>'+(enhancedExam(q)?(guide?.answer?examTextMarkup(guide.answer):examAnswerMarkup(q)):escape(guide?.answer||q.answer))+'</span></div>';}

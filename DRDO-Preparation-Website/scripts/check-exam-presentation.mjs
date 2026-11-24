@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {questions} from '../dist/data.js';
 import {examTextParts,examTextMarkup,normalizeExamEquation,examWorkedSolutionMarkup} from '../dist/exam-presentation.js';
 import {questionPromptMarkup,questionContextMarkup,workedSolutionMarkup,finalAnswerMarkup} from '../dist/worked-solutions.js';
-const rows=questions.filter(q=>q.exam==='isro'||q.exam==='drdo');assert.equal(rows.length,413);
+const rows=questions.filter(q=>q.exam==='gate'||q.exam==='isro'||q.exam==='drdo');assert.equal(rows.length,2073);
 let mathRuns=0;
 for(const q of rows){
  const strings=[q.prompt,q.answer,...q.steps,...(q.response.choices||[]).filter(x=>typeof x==='string')];
@@ -22,4 +22,4 @@ for(const s of [-3,0,.5,1,3,4]){const direct=1-4/(3*(s+1))+1/(3*(s-2));const fac
 assert.equal(500*.020,10);assert.equal(Math.atan(10/10)*180/Math.PI,45);
 assert.equal(.98/(1-.98)>48.9999,true);
 const p=(rl,xl)=>rl/((4+rl)**2+(3+xl)**2);assert(p(4,-3)>p(3,-3)&&p(4,-3)>p(5,-3)&&p(4,-3)>p(4,0));
-console.log(`Passed ${rows.length} ISRO/DRDO cards and ${mathRuns} recognized math runs: source-text preservation, equation structure, status labels, escaping, and independent pole/zero and circuit checks.`);
+console.log(`Passed ${rows.length} GATE/ISRO/DRDO cards and ${mathRuns} recognized math runs: source-text preservation, equation structure, status labels, escaping, and independent pole/zero and circuit checks.`);
