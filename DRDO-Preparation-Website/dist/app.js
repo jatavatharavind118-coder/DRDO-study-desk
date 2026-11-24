@@ -1,3 +1,4 @@
+import {workedSolutionMarkup,questionContextMarkup,finalAnswerMarkup} from './worked-solutions.js';
 import {examArchive} from './exam-archive.js';
 import {setupExamSeries} from './exam-series.js';
 import {topics, papers, questions, drills, interview} from './data.js';
@@ -151,10 +152,10 @@ function questionCard(q) {
   const workings=calculations[q.id]||[];
   return '<article class="card question" id="'+q.id+'"><header><h3>'+topic.name+'</h3><span class="meta">'+escape(q.ref)+'</span></header>'+
 
-    '<div class="qa"><div><h4>Question</h4><p>'+escape(q.prompt)+'</p>'+(q.figure?'<figure class="pyq-figure"><a href="'+escape(q.figure)+'" target="_blank" rel="noopener"><img src="'+escape(q.figure)+'" alt="'+escape(q.figureAlt)+'" loading="lazy"></a><figcaption>'+escape(q.figureCaption||'Question diagram · click to enlarge')+'</figcaption></figure>':'')+responsePrompt(q.response)+'</div>'+
-    '<div><h4>'+(q.unresolved?'Source limitation':q.excluded||q.marksToAll?'Official status and explanation':'Worked solution')+'</h4><ol class="solution-steps">'+q.steps.map(step=>'<li>'+escape(step)+'</li>').join('')+'</ol>'+
+    '<div class="qa"><div><h4>Question</h4><p>'+escape(q.prompt)+'</p>'+questionContextMarkup(q)+(q.figure?'<figure class="pyq-figure"><a href="'+escape(q.figure)+'" target="_blank" rel="noopener"><img src="'+escape(q.figure)+'" alt="'+escape(q.figureAlt)+'" loading="lazy"></a><figcaption>'+escape(q.figureCaption||'Question diagram · click to enlarge')+'</figcaption></figure>':'')+responsePrompt(q.response)+'</div>'+
+    '<div><h4>'+(q.unresolved?'Source limitation':q.excluded||q.marksToAll?'Official status and explanation':'Worked solution')+'</h4>'+workedSolutionMarkup(q)+
     (workings.length?'<div class="solution-math">'+workings.map(equationMarkup).join('')+'</div>':'')+
-    '<p class="answer-line"><strong>Final answer</strong> '+escape(q.answer)+'</p>'+
+    finalAnswerMarkup(q)+
     (prep.trap?'<p class="check-line"><strong>Common mistake</strong> '+escape(prep.trap)+'</p>':'')+(q.reviewNote?'<p class="notice"><strong>Source note:</strong> '+escape(q.reviewNote)+'</p>':'')+'</div></div>'+
     '<details class="question-lesson optional-pyq-theory"><summary>Theory behind this question</summary><h4>'+escape(prep.title)+'</h4><p>'+escape(prep.idea)+'</p>'+linkedFormulas(q.topic,prep.refs)+'<p><strong>How to start</strong> '+escape(prep.approach)+'</p><div class="actions">'+button('open-study-topic','Read the full topic notes',true,'data-id="'+q.topic+'" data-route="theory"')+'</div></details>'+
     '<footer>'+ext(archiveLink(q.file)+'#page='+q.page,'Open original PDF')+(q.sources||[]).map(url=>ext(url,'Supporting source')).join('')+

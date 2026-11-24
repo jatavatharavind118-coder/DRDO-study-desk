@@ -175,3 +175,26 @@
 .question .pyq-figure { margin:18px 0; }
 .question .pyq-figure img { display:block; width:100%; height:auto; }
 .question .pyq-figure figcaption { margin-top:6px; font-size:.875rem; color:var(--muted); }
+
+/* Worked answers: readable numbered sections and open, centred mathematics. */
+.question .qa>div+div{background:#fff}
+.worked-explanation{line-height:1.8}
+.worked-explanation .solution-section{margin-top:28px}
+.worked-explanation .solution-section:first-child{margin-top:16px}
+.worked-explanation h5,.question-meaning h5{font-size:1rem;line-height:1.4;margin:0 0 14px;font-weight:750}
+.worked-explanation p{max-width:72ch;margin:12px 0;line-height:1.8}
+.worked-explanation .equation{background:transparent;color:inherit;padding:12px 4px;margin:20px 0 26px;border-radius:0}
+.worked-explanation .equation math{font-size:1.2rem;min-width:max-content}
+.worked-explanation p math{font-size:1.08em;margin:0 .12em}
+.worked-explanation .boxed-equation{display:grid;justify-items:center;margin:24px 0}
+.worked-explanation .boxed-equation .equation{border:1px solid currentColor;padding:10px 16px;margin:0;max-width:100%}
+.worked-explanation .step-conclusion{margin:18px 0 26px}
+.question-meaning{margin:18px 0;padding:14px 16px;background:#f5f7fb;border-left:3px solid #b7c7e8}
+.question-meaning h5{margin-bottom:7px}
+.boxed-final-answer{border:1px solid #81b69f;background:#f0f8f4;padding:14px 16px;margin-top:28px}
+.boxed-final-answer>span{display:block;line-height:1.6;font-weight:650}
+@media(max-width:700px){.worked-explanation .equation math{font-size:1.08rem}.worked-explanation .solution-section{margin-top:24px}}
+/* Give multi-line derivations the full card width. */
+.question:has(.display-equation) .qa{grid-template-columns:1fr}
+.question:has(.display-equation) .qa>div+div{border-left:0;border-top:1px solid var(--line)}
+.question:has(.display-equation) .worked-explanation{max-width:90ch;margin-inline:auto}

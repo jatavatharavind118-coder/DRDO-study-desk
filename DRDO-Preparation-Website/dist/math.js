@@ -3,7 +3,7 @@ const escape = text => text.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const namedOperators = new Set(['cos','tan','ln','log','lim','mod','det']);
 const units = new Set(['Hz','kHz','MHz','GHz','mV','mA','mW','dB','dBm','bit','Mbit','nm','eV']);
 const words = new Set(['SQNR','SNR','VSWR','Change','mean','new','old']);
-const tokenPattern = /(?:frac|sqrt)(?=\{)|[A-Za-z]+|\d+(?:\.\d+)?|[^\s]/gu;
+const tokenPattern = /\\[{}]|(?:frac|sqrt)(?=\{)|[A-Za-z]+|\d+(?:\.\d+)?|[^\s]/gu;
 const isSymbol = /^(?:[A-Za-z]+|\p{L})$/u;
 
 function atom(token) {
@@ -22,6 +22,7 @@ function equationRow(equation) {
   function take() {
     const token = tokens[cursor++];
     if (token === undefined || token === '}') throw new Error('Incomplete equation: '+equation);
+    if (token === '\\{' || token === '\\}') return atom(token.slice(1));
     if (token === 'frac') return '<mfrac>'+take()+take()+'</mfrac>';
     if (token === 'sqrt') return '<msqrt>'+take()+'</msqrt>';
     if (token !== '{') return atom(token);
@@ -53,4 +54,9 @@ function equationRow(equation) {
 
 export function equationMarkup(equation) {
   return '<div class="equation">'+equation.split(';').map(equationRow).join('')+'</div>';
+}
+
+// Inline MathML shares the exact parser used for displayed equations.
+export function inlineEquationMarkup(equation) {
+  return equationRow(equation).replace('display="block"','display="inline"');
 }

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {questions} from '../dist/data.js';
+import {questions,topics} from '../dist/data.js';
 const root=new URL('../dist/',import.meta.url);
 assert.equal(new Set(questions.map(q=>q.id)).size,questions.length);
 for(const [prefix,total] of [['g10-',65],['i20-',80],['g09-',60],['g07-',85],['g08-',85],['g16s1-',65],['g16s2-',65],['g16s3-',65],['g17s1-',65],['g17s2-',65],['i24-',95]]){
@@ -74,3 +74,5 @@ assert.deepEqual(stream,[0,1,1,0,1,0,0]);
 let euler=0;for(let i=0;i<3;i++)euler+=.1*(euler+.1*i);assert(Math.abs(euler-.031)<1e-12);
 const fourDigits=new Set();for(const a of [2,3,4])for(const b of [2,3,4])for(const c of [2,3,4])for(const d of [2,3,4]){const digits=[a,b,c,d];if(1000*a+100*b+10*c+d>3000&&digits.filter(x=>x===2).length<=2&&digits.filter(x=>x===3).length<=3)fourDigits.add(digits.join(''));}assert.equal(fourDigits.size,51);
 assert(Math.abs(1/(2*Math.PI*4.7e-6*1250)-27.0902)<.0001);
+
+const validTopics=new Set(topics.map(t=>t.id));for(const q of questions)assert(validTopics.has(q.topic),`Unknown topic ${q.id}: ${q.topic}`);
