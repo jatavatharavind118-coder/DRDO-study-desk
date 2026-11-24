@@ -18,7 +18,7 @@ function block(item){
  if(item.conclusion)return '<p class="step-conclusion"><strong>'+escape(item.conclusion)+'</strong></p>';
  return '<p>'+inline(item.text)+'</p>';
 }
-export function questionContextMarkup(q){const guide=solutionGuides[q.id];return guide?.meaning?'<div class="question-meaning"><h5>What the question asks</h5><p>'+escape(guide.meaning)+'</p></div>':'';}
+export function questionContextMarkup(q){const guide=q.solutionGuide||solutionGuides[q.id];return guide?.meaning?'<div class="question-meaning"><h5>What the question asks</h5><p>'+escape(guide.meaning)+'</p></div>':'';}
 export function workedSolutionMarkup(q){
  const guide=q.solutionGuide||solutionGuides[q.id];
  const sections=guide?.sections||q.steps.map((step,index)=>typeof step==='string'?{title:'Step '+(index+1),blocks:[text(step)]}:step);

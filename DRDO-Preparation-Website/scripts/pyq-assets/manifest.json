@@ -1454,5 +1454,65 @@
   {
     "path": "dist/pyq-figures/g11-62.png",
     "sha256": "81c6e9be2b7d8942d0be75cec24626c7e222c24b1536ca589f3b62847fc7be6b"
+  },
+  {
+    "path": "dist/pyq-figures/g12-2.svg",
+    "sha256": "f0b31441d30909b37661f0d155683ee266b7cc506a63ea0bb7954dc9df8e935e"
+  },
+  {
+    "path": "dist/pyq-figures/g12-6.svg",
+    "sha256": "13a7b16ee439219b88503f25e8e3317d7064f8da7ba65617b64620b3f68d46a9"
+  },
+  {
+    "path": "dist/pyq-figures/g12-9.svg",
+    "sha256": "ce4e3ab20deb1cb54846da1f910b0deec818f6dc1248ae7c52ee8f1d6432efca"
+  },
+  {
+    "path": "dist/pyq-figures/g12-13.svg",
+    "sha256": "6b525182de69faecf355cec67a9b749b8fae3821e16400a0dc32efa4d7b1f96a"
+  },
+  {
+    "path": "dist/pyq-figures/g12-14.svg",
+    "sha256": "dee75afe58d85e65f19086551c08222903c0f1002883f44dc6d818457f476d52"
+  },
+  {
+    "path": "dist/pyq-figures/g12-21.svg",
+    "sha256": "4cb1b7d8df252747df4f4e5cc1eb3e1feb7b2970a994c6180572342fac6d9a64"
+  },
+  {
+    "path": "dist/pyq-figures/g12-22.svg",
+    "sha256": "799bf379decc5a75c2ee6fa64366fae70e816209e50315ce23d6383dc5a8e0eb"
+  },
+  {
+    "path": "dist/pyq-figures/g12-33.svg",
+    "sha256": "30f91b83f7c32de46fe32d4e4f19c2fc0dcff302ee6d37c740924badef872280"
+  },
+  {
+    "path": "dist/pyq-figures/g12-37.svg",
+    "sha256": "c9c4665381e25b5ac47d3e65cec3a011025d370b92b03cde61e51d6d9e8294db"
+  },
+  {
+    "path": "dist/pyq-figures/g12-39.svg",
+    "sha256": "80045072453a8cb904ba49d27d2c74b283fee5856a66db95fb1b20ebc56fb030"
+  },
+  {
+    "path": "dist/pyq-figures/g12-44.svg",
+    "sha256": "02330a5f6eabf9bce19ee920b06e2a543c871c4730b20b5b06b10ae1472e204d"
+  },
+  {
+    "path": "dist/pyq-figures/g12-45.svg",
+    "sha256": "45c1eb743cb38556b230a859f8f68881cdc725d25a525f10df3f71942f80421f"
+  },
+  {
+    "path": "dist/pyq-figures/g12-50.svg",
+    "sha256": "cb244b370ff7630a825bca0cb8877a79695833f2ac6b24138b02f947d1d93eae"
+  },
+  {
+    "path": "dist/pyq-figures/g12-51.svg",
+    "sha256": "cb244b370ff7630a825bca0cb8877a79695833f2ac6b24138b02f947d1d93eae"
+  },
+  {
+    "path": "dist/pyq-figures/g12-53.svg",
+    "sha256": "b907ce52e4c471495ef0c22a55c1a3869fcb50fa7a86165caa301e611f896397"
   }
 ]

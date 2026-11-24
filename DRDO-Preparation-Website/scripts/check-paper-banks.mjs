@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import {questions,topics} from '../dist/data.js';
 const root=new URL('../dist/',import.meta.url);
 assert.equal(new Set(questions.map(q=>q.id)).size,questions.length);
-for(const [prefix,total] of [['g11-',65],['g10-',65],['i20-',80],['g09-',60],['g07-',85],['g08-',85],['g16s1-',65],['g16s2-',65],['g16s3-',65],['g17s1-',65],['g17s2-',65],['i24-',95]]){
+for(const [prefix,total] of [['g12-',65],['g11-',65],['g10-',65],['i20-',80],['g09-',60],['g07-',85],['g08-',85],['g16s1-',65],['g16s2-',65],['g16s3-',65],['g17s1-',65],['g17s2-',65],['i24-',95]]){
  const rows=questions.filter(q=>q.id.startsWith(prefix));assert.equal(rows.length,total,prefix);
  for(let number=1;number<=total;number++){
   const q=rows.find(q=>q.number===number);assert(q,`Missing ${prefix}${number}`);
@@ -81,4 +81,8 @@ let greater=0;for(let a=1;a<=6;a++)for(let b=1;b<=6;b++)if(b>a)greater++;assert.
 assert.equal((1e-3-.5e-3)/5e-6,100);assert.equal(5/100,.05);
 assert(Math.abs(10*Math.log10((Math.sin(Math.PI/4)/Math.sin(Math.PI/8))**2)-5.3329)<.0001);
 for(let n=1;n<=8;n++){let sum=0,term=0;for(let k=1;k<=n;k++){term=10*term+4;sum+=term;}assert(Math.abs(sum-4/81*(10**(n+1)-9*n-10))<1e-6);}
-console.log('Passed 860 new Q&A entries: counts, numbering, source PDFs, figures, withdrawal status, and independent convolution, Boolean and numerical checks.');
+assert.deepEqual(questions.filter(q=>q.id.startsWith('g12-')&&q.marksToAll).map(q=>q.number),[4,16,40]);
+assert(Math.abs((56-70*.8)/(2+.8)**3)<1e-12);
+assert.equal(1-(.75**2),7/16);
+for(const q of questions.filter(q=>q.id.startsWith('g12-'))){assert(q.solutionGuide?.sections.length>=2);if(!q.marksToAll)assert(q.answer.startsWith('('+q.archivedKey+')'),q.id);}
+console.log('Passed 925 new Q&A entries: counts, numbering, source PDFs, figures, withdrawal status, and independent convolution, Boolean and numerical checks.');
