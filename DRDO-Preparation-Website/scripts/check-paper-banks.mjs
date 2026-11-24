@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import {questions,topics} from '../dist/data.js';
 const root=new URL('../dist/',import.meta.url);
 assert.equal(new Set(questions.map(q=>q.id)).size,questions.length);
-for(const [prefix,total] of [['g13a-',65],['g13b-',65],['g13c-',65],['g13d-',65],['g12-',65],['g11-',65],['g10-',65],['i20-',80],['g09-',60],['g07-',85],['g08-',85],['g16s1-',65],['g16s2-',65],['g16s3-',65],['g17s1-',65],['g17s2-',65],['i24-',95]]){
+for(const [prefix,total] of [['g14s1-',65],['g13a-',65],['g13b-',65],['g13c-',65],['g13d-',65],['g12-',65],['g11-',65],['g10-',65],['i20-',80],['g09-',60],['g07-',85],['g08-',85],['g16s1-',65],['g16s2-',65],['g16s3-',65],['g17s1-',65],['g17s2-',65],['i24-',95]]){
  const rows=questions.filter(q=>q.id.startsWith(prefix));assert.equal(rows.length,total,prefix);
  for(let number=1;number<=total;number++){
   const q=rows.find(q=>q.number===number);assert(q,`Missing ${prefix}${number}`);
@@ -99,4 +99,10 @@ assert.equal((10+5*2/(5+2))*2.8,32);
 assert.equal((5+5+4+3+2+1+3).toString(16),'17');
 for(const s of [1,2,3]){const c=(s+1)/(5*s*s+6*s+2);const a=1-2*c,b=a/s-4*c;assert(Math.abs(c-(1+1/s)*b)<1e-12);}
 const counts=new Map();for(const u of [-1,1])for(const v of [-1,1])counts.set(u+v,(counts.get(u+v)||0)+1);let entropy=0;for(const count of counts.values()){const p=count/4;entropy-=p*Math.log2(p);}assert.equal(entropy,1.5);
-console.log('Passed 1185 new Q&A entries: counts, numbering, source PDFs, figures, withdrawal status, and independent convolution, Boolean and numerical checks.');
+const g14s1keys=JSON.parse(fs.readFileSync(new URL('./fixtures/gate-2014s1-keys.json',import.meta.url))).rows;
+for(const q of questions.filter(q=>q.id.startsWith('g14s1-'))){const key=g14s1keys[q.number-1];assert.equal(q.sourceNumber,key[0]);assert.equal(q.response.type,key[1]);assert.equal(q.archivedKey,key[3]);if(key[1]==='MCQ')assert(q.answer.startsWith('('+key[3]+')'),q.id);assert(q.solutionGuide.meaning);}
+assert(Math.abs(4*4/40**2-.01)<1e-12);
+assert(Math.abs(1e-13*Math.exp(.7/.025)/.025-5.785028)<.00001);
+assert(Math.abs(13.25*(2/3)*2*Math.PI-55.50147)<.00001);
+for(let x=0;x<2;x++)for(let y=0;y<2;y++)for(let z=0;z<2;z++){const a=x^y;assert.equal(Boolean(a&&!(a^z)),Boolean((!x&&y&&z)||(x&&!y&&z)));}
+console.log('Passed 1250 new Q&A entries: counts, numbering, source PDFs, figures, withdrawal status, and independent convolution, Boolean and numerical checks.');

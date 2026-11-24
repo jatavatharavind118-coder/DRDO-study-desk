@@ -1602,5 +1602,61 @@
   {
     "path": "dist/pyq-figures/g13-54.svg",
     "sha256": "f688a4a8d12976b31ca77cbb888b6c6a3d8003c6552a442ea86b6c1b09e9c25c"
+  },
+  {
+    "path": "dist/pyq-figures/g14s1-17.svg",
+    "sha256": "a04f933512ca78a92bbda1a54d4aa37b9772753d2be2efae342d2d9b2241a762"
+  },
+  {
+    "path": "dist/pyq-figures/g14s1-19.svg",
+    "sha256": "1f75fea622cbfbb88648eea8b070b6bbc89e493ab055ae60ba85b90e9fcfe088"
+  },
+  {
+    "path": "dist/pyq-figures/g14s1-22.svg",
+    "sha256": "90f9a311632876ec281746dc535d42c33e4500269dd999204c71cfe079671afe"
+  },
+  {
+    "path": "dist/pyq-figures/g14s1-23.svg",
+    "sha256": "efbaa47aa3f7c7c5f880a174e2a30e21a292067aa17045dd3c9fb8bfeb0a6358"
+  },
+  {
+    "path": "dist/pyq-figures/g14s1-24.svg",
+    "sha256": "398345a1ba02aadeffd9ce548522ce0997fef99c15db2e0bc628378ac5cd2d31"
+  },
+  {
+    "path": "dist/pyq-figures/g14s1-26.svg",
+    "sha256": "1b5797d98dc4be2b29908c85d1d47f7e4b25341241f76150d1beecd6a5ed3ace"
+  },
+  {
+    "path": "dist/pyq-figures/g14s1-31.svg",
+    "sha256": "893184be6459d8e450206c2e96f9a22e062b1d2894195a8130142f61b4724857"
+  },
+  {
+    "path": "dist/pyq-figures/g14s1-42.svg",
+    "sha256": "0e15cca31362d43a73f1d16cc17902a76f71dbd0b377686a49c6a938313fff14"
+  },
+  {
+    "path": "dist/pyq-figures/g14s1-43.svg",
+    "sha256": "c3fe9ac6294c86699b85790260795c6c07ff6b4e1e0238cfc355235acdade64f"
+  },
+  {
+    "path": "dist/pyq-figures/g14s1-47.svg",
+    "sha256": "f21417d952edfa68b2e3a29ea25a46c2c6f6b7ca0429cb30c9e8fb2cb9fb0ae1"
+  },
+  {
+    "path": "dist/pyq-figures/g14s1-48.svg",
+    "sha256": "d36d1a73393d90ff348220419b077e6236204604f46fe6ccf4dce63e25772558"
+  },
+  {
+    "path": "dist/pyq-figures/g14s1-49.svg",
+    "sha256": "5d36fb0abf79aef9a99db8dbea5b04c4791899fb27b85aa2abbf2f3b702f7b5e"
+  },
+  {
+    "path": "dist/pyq-figures/g14s1-50.svg",
+    "sha256": "c6898fa118054c3fc5e7346671b5d3c4f48d03ebdd1e3256ffd43f19d771e008"
+  },
+  {
+    "path": "dist/pyq-figures/g14s1-52.svg",
+    "sha256": "c352ec39e6b6bb2e55f7a724aa6f8e1887cf97cc8877eb9692f235023a10c971"
   }
 ]
