@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import {questions} from '../dist/data.js';
 const root=new URL('../dist/',import.meta.url);
 assert.equal(new Set(questions.map(q=>q.id)).size,questions.length);
-for(const [prefix,total] of [['i20-',80],['g09-',60],['g07-',85],['g08-',85],['g16s1-',65],['g16s2-',65],['g16s3-',65],['g17s1-',65],['g17s2-',65],['i24-',95]]){
+for(const [prefix,total] of [['g10-',65],['i20-',80],['g09-',60],['g07-',85],['g08-',85],['g16s1-',65],['g16s2-',65],['g16s3-',65],['g17s1-',65],['g17s2-',65],['i24-',95]]){
  const rows=questions.filter(q=>q.id.startsWith(prefix));assert.equal(rows.length,total,prefix);
  for(let number=1;number<=total;number++){
   const q=rows.find(q=>q.number===number);assert(q,`Missing ${prefix}${number}`);
@@ -30,7 +30,7 @@ assert(Math.abs(10*Math.log10(10+9/10+9/100)-10.410)<.001);
 assert(Math.abs((1.2**2-1)*100-44)<1e-10);
 assert.equal(155**2,24025);
 assert.equal(2500/(100**2+150**2)*100,7.6923076923076925);
-console.log('Passed 730 new Q&A entries: counts, numbering, source PDFs, figures, withdrawal status, and independent convolution, Boolean and numerical checks.');
+console.log('Passed 795 new Q&A entries: counts, numbering, source PDFs, figures, withdrawal status, and independent convolution, Boolean and numerical checks.');
 
 // GATE 2007: independently check the minimized Boolean function and R–2R voltages.
 for(let bits=0;bits<16;bits++){
@@ -65,3 +65,12 @@ for(const start of new Set(edges.flat())){
  const walk=(node,path)=>{for(const [u,v]of edges){if(u!==node)continue;if(v===start){const names=path;const key=names.map((_,i)=>names.slice(i).concat(names.slice(0,i)).join('')).sort()[0];cycles.add(key);}else if(!path.includes(v))walk(v,[...path,v]);}};walk(start,[start]);
 }
 assert.equal(cycles.size,5);
+
+// GATE 2010: verify MUX minterms and shift-register cycle from its state equations.
+const minterms=[];for(let v=0;v<16;v++){const a=(v>>3)&1,b=(v>>2)&1,c=(v>>1)&1,d=v&1;if([c,d,!c,!c&&!d][2*a+b])minterms.push(v);}
+assert.deepEqual(minterms,[2,3,5,7,8,9,12]);
+let state=[0,0,0];const stream=[];for(let i=0;i<7;i++){stream.push(state[0]);const [a,b,c]=state;state=[Number(!(b^c)),a,b];}
+assert.deepEqual(stream,[0,1,1,0,1,0,0]);
+let euler=0;for(let i=0;i<3;i++)euler+=.1*(euler+.1*i);assert(Math.abs(euler-.031)<1e-12);
+const fourDigits=new Set();for(const a of [2,3,4])for(const b of [2,3,4])for(const c of [2,3,4])for(const d of [2,3,4]){const digits=[a,b,c,d];if(1000*a+100*b+10*c+d>3000&&digits.filter(x=>x===2).length<=2&&digits.filter(x=>x===3).length<=3)fourDigits.add(digits.join(''));}assert.equal(fourDigits.size,51);
+assert(Math.abs(1/(2*Math.PI*4.7e-6*1250)-27.0902)<.0001);
