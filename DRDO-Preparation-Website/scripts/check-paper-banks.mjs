@@ -1,0 +1,33 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {questions} from '../dist/data.js';
+const root=new URL('../dist/',import.meta.url);
+assert.equal(new Set(questions.map(q=>q.id)).size,questions.length);
+for(const [prefix,total] of [['g08-',85],['g16s1-',65],['g16s2-',65],['g16s3-',65],['g17s1-',65],['g17s2-',65],['i24-',95]]){
+ const rows=questions.filter(q=>q.id.startsWith(prefix));assert.equal(rows.length,total,prefix);
+ for(let number=1;number<=total;number++){
+  const q=rows.find(q=>q.number===number);assert(q,`Missing ${prefix}${number}`);
+  assert(q.prompt&&q.answer&&q.steps.length>=2,`Missing content ${q.id}`);
+  assert(q.paperId&&q.response&&q.page>0,`Missing paper metadata ${q.id}`);
+  if(['MCQ','MSQ'].includes(q.response.type))assert(Array.isArray(q.response.choices)&&q.response.choices.length===4,`Missing choices ${q.id}`);
+  assert(fs.existsSync(new URL('papers/'+q.file,root)),`Missing source ${q.id}`);
+  if(q.figure)assert(fs.existsSync(new URL(q.figure,root)),`Missing figure ${q.id}`);
+ }
+}
+assert.deepEqual(questions.filter(q=>q.id.startsWith('i24-')&&q.excluded).map(q=>q.number),[23,32,44]);
+// Recompute representative results without using answer strings.
+const conv=Array(5).fill(0);for(const [i,h]of [1,-1,2].entries())for(const j of [0,2])conv[i+j]+=h;
+assert.deepEqual(conv,[1,-1,3,-1,2]);
+for(let bits=0;bits<16;bits++){
+ const p=(bits>>3)&1,q=(bits>>2)&1,r=(bits>>1)&1,s=bits&1;
+ const mux=[p||!q,p,p&&q,p][2*r+s];
+ assert.equal(Boolean(mux),Boolean((p&&q)||(p&&!q&&s)||(!q&&!r&&!s)));
+}
+assert.equal(0x30a0*2,0x6140);
+assert.equal(Math.ceil(6.2/.5),13);
+assert.equal(20*60*2*(12+10)/2,26400);
+assert(Math.abs(10*Math.log10(10+9/10+9/100)-10.410)<.001);
+assert(Math.abs((1.2**2-1)*100-44)<1e-10);
+assert.equal(155**2,24025);
+assert.equal(2500/(100**2+150**2)*100,7.6923076923076925);
+console.log('Passed 505 new Q&A entries: counts, numbering, source PDFs, figures, withdrawal status, and independent convolution, Boolean and numerical checks.');

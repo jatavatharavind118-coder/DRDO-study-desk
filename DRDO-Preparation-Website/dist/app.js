@@ -1,3 +1,4 @@
+import {examArchive} from './exam-archive.js';
 import {setupExamSeries} from './exam-series.js';
 import {topics, papers, questions, drills, interview} from './data.js';
 import {formulaBank, lessons, questionPrep, calculations} from './lessons.js';
@@ -44,6 +45,7 @@ const aptitudeStudy=setupAptitudeStudy({state,save,today,escape,explanation:prac
 state.topicStudy={seen:{},answers:{},matches:{},scores:{},...state.topicStudy};
 let active = 'dashboard';
 const filters = {};
+state.paperFilters={gate:'gate-2026',isro:'isro-2025',...state.paperFilters};
 let practiceSession = [];
 let practiceIndex = 0;
 let practiceAnswer = null;
@@ -71,7 +73,9 @@ function applyBackground(color) {
   document.querySelector('#background').value = validated;
 }
 function archiveLink(file) {
-  return file.startsWith('https://') ? file : './papers/'+encodeURIComponent(file);
+  if(file.startsWith('https://')) return file;
+  const [name,hash]=file.split('#');
+  return './papers/'+encodeURIComponent(name)+(hash?'#'+hash:'');
 }
 const ext = (url,label) => '<a href="'+escape(url)+'" target="_blank" rel="noopener">'+escape(label)+'</a>';
 const section = (title,note) => '<div class="heading"><h1>'+title+'</h1><p class="sub">'+note+'</p></div>';
@@ -128,7 +132,8 @@ function linkedFormulas(topic, refs) {
   return refs.length ? '<div class="formula-grid">'+refs.map(id=>formulaCard(formulaIndex[topic][id],true)).join('')+'</div>' : '';
 }
 function responsePrompt(response) {
-  const {type,choices,unit,places}=response;
+  const {type,choices:rawChoices,unit,places}=response;
+  const choices=rawChoices||['Figure (A)','Figure (B)','Figure (C)','Figure (D)'];
   if(type==='TEXT') return '';
   if(type==='NAT'&&places===undefined) return '<p class="response-note"><strong>Numerical answer</strong> Use the units and precision requested in the question.</p>';
   if (type==='NAT') {
@@ -146,7 +151,7 @@ function questionCard(q) {
   const workings=calculations[q.id]||[];
   return '<article class="card question" id="'+q.id+'"><header><h3>'+topic.name+'</h3><span class="meta">'+escape(q.ref)+'</span></header>'+
 
-    '<div class="qa"><div><h4>Question</h4><p>'+escape(q.prompt)+'</p>'+(q.figure?'<figure class="pyq-figure"><a href="'+escape(q.figure)+'" target="_blank" rel="noopener"><img src="'+escape(q.figure)+'" alt="'+escape(q.figureAlt)+'" loading="lazy"></a><figcaption>Question diagram · click to enlarge</figcaption></figure>':'')+responsePrompt(q.response)+'</div>'+
+    '<div class="qa"><div><h4>Question</h4><p>'+escape(q.prompt)+'</p>'+(q.figure?'<figure class="pyq-figure"><a href="'+escape(q.figure)+'" target="_blank" rel="noopener"><img src="'+escape(q.figure)+'" alt="'+escape(q.figureAlt)+'" loading="lazy"></a><figcaption>'+escape(q.figureCaption||'Question diagram · click to enlarge')+'</figcaption></figure>':'')+responsePrompt(q.response)+'</div>'+
     '<div><h4>'+(q.unresolved?'Source limitation':q.excluded||q.marksToAll?'Official status and explanation':'Worked solution')+'</h4><ol class="solution-steps">'+q.steps.map(step=>'<li>'+escape(step)+'</li>').join('')+'</ol>'+
     (workings.length?'<div class="solution-math">'+workings.map(equationMarkup).join('')+'</div>':'')+
     '<p class="answer-line"><strong>Final answer</strong> '+escape(q.answer)+'</p>'+
@@ -156,16 +161,44 @@ function questionCard(q) {
     button('save-item',state.saved[q.id]?'Remove from revision':'Save for revision',true,'data-id="'+q.id+'"')+
     button('solved',state.solved[q.id]?'Solved ✓':'Mark solved',true,'data-id="'+q.id+'"')+'</footer></article>';
 }
+function questionPaperId(q) {
+  if(q.paperId) return q.paperId;
+  const year=q.ref.match(/\b(20\d{2})\b/)?.[1];
+  const set=q.ref.match(/(?:Set|Session)\s*(\d)/i)?.[1];
+  return q.exam+'-'+year+(set?'-'+set:'');
+}
+function pyqPaperOptions(exam) {
+  if(exam==='gate') return Array.from({length:20},(_,i)=>2026-i).flatMap(year=>{
+    const sets={2017:2,2016:3,2015:3,2014:4,2013:4}[year];
+    return Array.from({length:sets||1},(_,i)=>({id:'gate-'+year+(sets?'-'+(i+1):''),label:'GATE '+year+(sets?' · '+(year===2013?'Booklet ':'Set ')+(year===2013?'ABCD'[i]:i+1):'')}));
+  });
+  return [...new Map([...questions.filter(q=>q.exam===exam).map(q=>[questionPaperId(q),{id:questionPaperId(q),label:exam.toUpperCase()+' '+q.ref.match(/\b(20\d{2})\b/)?.[1]}]),...(examArchive[exam]||[]).map(p=>[p.id,{id:p.id,label:exam.toUpperCase()+' '+p.title}])]).values()].sort((a,b)=>b.id.localeCompare(a.id));
+}
+function selectedPaperSource(exam) {
+  const id=state.paperFilters[exam];if(!id)return '';
+  const item=(examArchive[exam]||[]).find(p=>p.id===id);
+  const year=id.split('-')[1];
+  const source=item?.paper||papers[exam].find(p=>new RegExp('\\b'+year+'\\b').test(p.name));
+  const sample=questions.find(q=>q.exam===exam&&questionPaperId(q)===id);
+  return source?'<div class="actions">'+ext(archiveLink(sample?.file||source.file),'Open selected question paper')+(source.answer?ext(archiveLink(source.answer),'Open selected answer key'):'')+'</div>':'';
+}
+function paperSelect(exam) {
+  return '<label class="field">Paper<select id="paper-filter"><option value="">All papers</option>'+pyqPaperOptions(exam).map(p=>'<option value="'+p.id+'" '+(state.paperFilters[exam]===p.id?'selected':'')+'>'+escape(p.label)+'</option>').join('')+'</select></label>';
+}
 function pyq(exam) {
-  const list=questions.filter(q=>q.exam===exam&&matchTopic(q));
+  const selectedPaper=state.paperFilters[exam]||'';
+  const list=questions.filter(q=>q.exam===exam&&matchTopic(q)&&(!selectedPaper||questionPaperId(q)===selectedPaper));
   const description='Read each question alongside its step-by-step worked solution. Theory is hidden until you open it; the original PDF is an optional source link.';
   const pending=list.filter(q=>q.unresolved);
+  const selectedLabel=pyqPaperOptions(exam).find(p=>p.id===selectedPaper)?.label||'All papers';
   const ready=list.filter(q=>!q.unresolved);
-  const byTopic=topics.map(topic=>({topic,items:ready.filter(item=>item.topic===topic.id)})).filter(group=>group.items.length);
+  const order=q=>q.number??Number(q.id.match(/(\d+)$/)?.[1]||0);
+  const byTopic=selectedPaper?(ready.length?[{topic:{name:selectedLabel},items:ready.slice().sort((a,b)=>order(a)-order(b))}]:[]):topics.map(topic=>({topic,items:ready.filter(item=>item.topic===topic.id)})).filter(group=>group.items.length);
   return section(routes[exam][1],description)+
     (exam==='drdo'?'':'<div class="actions">'+link(exam+'-tests',routes[exam+'-tests'][1])+'</div>')+
-    '<div class="toolbar">'+topicSelect(exam)+'<span class="meta">'+ready.length+' worked question'+(ready.length!==1?'s':'')+(pending.length?' · '+pending.length+' need missing source information':'')+'</span>'+button('jump-archive','Open full papers',true)+'</div>'+
-    (list.length?'<div class="stack">'+byTopic.map(({topic,items})=>'<section class="pyq-topic"><h2>'+topic.name+'</h2><div class="stack">'+items.map(questionCard).join('')+'</div></section>').join('')+'</div>':'<p class="card">Worked questions for that topic aren’t in this section yet. Browse the full papers below.</p>')+
+    '<div class="toolbar">'+paperSelect(exam)+topicSelect(exam)+'<span class="meta">'+ready.length+' Q&amp;A '+(ready.length!==1?'entries':'entry')+(pending.length?' · '+pending.length+' need missing source information':'')+'</span>'+button('jump-archive','Open full papers',true)+'</div>'+
+    '<p class="meta">Showing '+escape(selectedLabel)+(selectedPaper?' · '+questions.filter(q=>q.exam===exam&&!q.unresolved).length+' total Q&amp;A entries across all papers':'')+'</p>'+selectedPaperSource(exam)+
+    (list.length?'<div class="stack">'+byTopic.map(({topic,items})=>'<section class="pyq-topic"><h2>'+topic.name+'</h2><div class="stack">'+items.map(questionCard).join('')+'</div></section>').join('')+'</div>':'<p class="card">No worked solutions match this paper and topic yet. Choose another paper or open the source paper below.</p>')+
     (pending.length?'<details class="card section"><summary><strong>Questions needing complete source material ('+pending.length+')</strong></summary><p>The supplied memory-based copy omits essential figures or data for these questions. Their exact limitations are shown below.</p><div class="stack">'+pending.map(questionCard).join('')+'</div></details>':'')+paperArchive(exam);
 }
 function studyPage(formula) {
@@ -324,6 +357,7 @@ document.querySelector('#menu').addEventListener('click',event=>{
 main.addEventListener('change',event=>{
   const el=event.target;
   if(aptitudeStudy.handleChange(el)){draw();document.getElementById(el.id)?.focus();return;}
+  if (el.id==='paper-filter') {state.paperFilters[active]=el.value;save();draw();document.querySelector('#paper-filter')?.focus();}
   if (el.id==='topic-filter') {filters[active]=el.value;if(active==='practice') newPractice();draw();document.querySelector('#topic-filter')?.focus();}
   if (el.id==='exam-date') {state.date=el.value;save();draw();document.querySelector('#exam-date')?.focus();}
   if (el.dataset.road) {updateFlag(state.done,el.dataset.road,true);draw();document.getElementById(el.id)?.focus();}
