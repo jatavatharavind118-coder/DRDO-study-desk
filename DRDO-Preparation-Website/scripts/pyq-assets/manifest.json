@@ -1514,5 +1514,93 @@
   {
     "path": "dist/pyq-figures/g12-53.svg",
     "sha256": "b907ce52e4c471495ef0c22a55c1a3869fcb50fa7a86165caa301e611f896397"
+  },
+  {
+    "path": "dist/pyq-figures/g13-9.svg",
+    "sha256": "fa6adc2e5f09fbea5abaf315555a0cc5e6f65407358175fb2f2316b681fba148"
+  },
+  {
+    "path": "dist/pyq-figures/g13-10.svg",
+    "sha256": "56e814ce7be63a7330590d4f01651658bb570e76d2a3a041957fb745c8b845cb"
+  },
+  {
+    "path": "dist/pyq-figures/g13-22.svg",
+    "sha256": "edc5b7f7a5e50210118fcad19534c9b606b31ae4e34d6e0c43544fa43e890626"
+  },
+  {
+    "path": "dist/pyq-figures/g13-28.svg",
+    "sha256": "1ef02772ea55267ccec09a0833f6cc9c613256edc87844472b2ac8020160f90b"
+  },
+  {
+    "path": "dist/pyq-figures/g13-30.svg",
+    "sha256": "47ee4ebb2864959bd652aa382af9b9255a605f03e9cfe3174034acde2b1b3a89"
+  },
+  {
+    "path": "dist/pyq-figures/g13-31.svg",
+    "sha256": "f307472a7652ae9b8d195f38364100b32b3feede88b28e2eb313ddf2da6c1e1e"
+  },
+  {
+    "path": "dist/pyq-figures/g13-34.svg",
+    "sha256": "c29ab942fdf90c725fa858a9a9d58cc57e7b379ceb59953116767491627634de"
+  },
+  {
+    "path": "dist/pyq-figures/g13-35.svg",
+    "sha256": "d2968ed73b24b7f5aafeb551e726301d5e04a4712a24ee990ce3e499404788e2"
+  },
+  {
+    "path": "dist/pyq-figures/g13-40.svg",
+    "sha256": "9bc5fe995d612909eb6071b9bcc45eef486dad7f128e92de1a6adbfcd8c05648"
+  },
+  {
+    "path": "dist/pyq-figures/g13-41.svg",
+    "sha256": "9aa01f0d2883e597e1392ec3e48e6905bafdabfc76e44464ef0569fd84c4d8cb"
+  },
+  {
+    "path": "dist/pyq-figures/g13-42.svg",
+    "sha256": "4c8adb67280f1d45bebf03bba4b4e124e8db1dc26e001deeaf6a01a248167a8e"
+  },
+  {
+    "path": "dist/pyq-figures/g13-43.svg",
+    "sha256": "2b6ce067b5a1e7b408658648566292c8096cfd48f56f402abfa51ac10534b7b5"
+  },
+  {
+    "path": "dist/pyq-figures/g13-44.svg",
+    "sha256": "1b36c7853ba33a8ef0f12bf7c7c9c3ea1a373e6f006ddf621d7bf74fb633d145"
+  },
+  {
+    "path": "dist/pyq-figures/g13-45.svg",
+    "sha256": "276e5aee49e8f845e923cd6b325cd0d7cb4b4152d9725402172f14be9945d079"
+  },
+  {
+    "path": "dist/pyq-figures/g13-46.svg",
+    "sha256": "9874e366e010db4b347a919df02cf6808c210cbe87b3978a70a03d43f826458e"
+  },
+  {
+    "path": "dist/pyq-figures/g13-48.svg",
+    "sha256": "28a897b68f69e09484710d3b80f06456b4dd9361220ee523c87d2cd60892dd96"
+  },
+  {
+    "path": "dist/pyq-figures/g13-49.svg",
+    "sha256": "28a897b68f69e09484710d3b80f06456b4dd9361220ee523c87d2cd60892dd96"
+  },
+  {
+    "path": "dist/pyq-figures/g13-50.svg",
+    "sha256": "01a347c0359e9efdb344fc7e8d8e2e0682e60839d51fe6a6cd44f44e46b257bc"
+  },
+  {
+    "path": "dist/pyq-figures/g13-51.svg",
+    "sha256": "01a347c0359e9efdb344fc7e8d8e2e0682e60839d51fe6a6cd44f44e46b257bc"
+  },
+  {
+    "path": "dist/pyq-figures/g13-52.svg",
+    "sha256": "2284092a9d82c9a94e45878035905496eea95c5a6dfb25c054de00b41b8f9f49"
+  },
+  {
+    "path": "dist/pyq-figures/g13-53.svg",
+    "sha256": "2284092a9d82c9a94e45878035905496eea95c5a6dfb25c054de00b41b8f9f49"
+  },
+  {
+    "path": "dist/pyq-figures/g13-54.svg",
+    "sha256": "f688a4a8d12976b31ca77cbb888b6c6a3d8003c6552a442ea86b6c1b09e9c25c"
   }
 ]

@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import {questions,topics} from '../dist/data.js';
 const root=new URL('../dist/',import.meta.url);
 assert.equal(new Set(questions.map(q=>q.id)).size,questions.length);
-for(const [prefix,total] of [['g12-',65],['g11-',65],['g10-',65],['i20-',80],['g09-',60],['g07-',85],['g08-',85],['g16s1-',65],['g16s2-',65],['g16s3-',65],['g17s1-',65],['g17s2-',65],['i24-',95]]){
+for(const [prefix,total] of [['g13a-',65],['g13b-',65],['g13c-',65],['g13d-',65],['g12-',65],['g11-',65],['g10-',65],['i20-',80],['g09-',60],['g07-',85],['g08-',85],['g16s1-',65],['g16s2-',65],['g16s3-',65],['g17s1-',65],['g17s2-',65],['i24-',95]]){
  const rows=questions.filter(q=>q.id.startsWith(prefix));assert.equal(rows.length,total,prefix);
  for(let number=1;number<=total;number++){
   const q=rows.find(q=>q.number===number);assert(q,`Missing ${prefix}${number}`);
@@ -85,4 +85,18 @@ assert.deepEqual(questions.filter(q=>q.id.startsWith('g12-')&&q.marksToAll).map(
 assert(Math.abs((56-70*.8)/(2+.8)**3)<1e-12);
 assert.equal(1-(.75**2),7/16);
 for(const q of questions.filter(q=>q.id.startsWith('g12-'))){assert(q.solutionGuide?.sections.length>=2);if(!q.marksToAll)assert(q.answer.startsWith('('+q.archivedKey+')'),q.id);}
-console.log('Passed 925 new Q&A entries: counts, numbering, source PDFs, figures, withdrawal status, and independent convolution, Boolean and numerical checks.');
+const g13keys=JSON.parse(fs.readFileSync(new URL('./fixtures/gate-2013-keys.json',import.meta.url))).rows;
+for(const q of questions.filter(q=>q.id.startsWith('g13'))){const column='abcd'.indexOf(q.id[3]);assert.equal(q.archivedKey,g13keys[q.number-1][column],q.id);assert.equal(q.archivedKey,g13keys[q.canonicalQuestionNumber-1][0],q.id);}
+// GATE 2013: booklet coverage and independently recomputed results.
+for(const booklet of 'abcd'){
+ const rows=questions.filter(q=>q.id.startsWith('g13'+booklet+'-'));
+ assert.equal(new Set(rows.map(q=>q.canonicalQuestionNumber)).size,65);
+ for(const q of rows){assert(q.solutionGuide.meaning&&q.solutionGuide.sections.length>=2);assert('ABCD'.includes(q.archivedKey));}
+}
+assert.equal(1/(100e-6*10000),1);
+assert(Math.abs(1/(2*Math.PI*1e-6*20000)-7.957747)<1e-6);
+assert.equal((10+5*2/(5+2))*2.8,32);
+assert.equal((5+5+4+3+2+1+3).toString(16),'17');
+for(const s of [1,2,3]){const c=(s+1)/(5*s*s+6*s+2);const a=1-2*c,b=a/s-4*c;assert(Math.abs(c-(1+1/s)*b)<1e-12);}
+const counts=new Map();for(const u of [-1,1])for(const v of [-1,1])counts.set(u+v,(counts.get(u+v)||0)+1);let entropy=0;for(const count of counts.values()){const p=count/4;entropy-=p*Math.log2(p);}assert.equal(entropy,1.5);
+console.log('Passed 1185 new Q&A entries: counts, numbering, source PDFs, figures, withdrawal status, and independent convolution, Boolean and numerical checks.');
