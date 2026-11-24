@@ -1,9 +1,10 @@
-import {workedSolutionMarkup,questionContextMarkup,finalAnswerMarkup} from './worked-solutions.js';
+import {enhancedExam,examTextMarkup} from './exam-presentation.js';
+import {workedSolutionMarkup,questionContextMarkup,questionPromptMarkup,finalAnswerMarkup} from './worked-solutions.js?v=20261124-exam';
 import {examArchive} from './exam-archive.js';
 import {setupExamSeries} from './exam-series.js';
 import {topics, papers, questions, drills, interview} from './data.js';
 import {formulaBank, lessons, questionPrep, calculations} from './lessons.js?v=20261124-formulas';
-import {equationMarkup} from './math.js';
+import {equationMarkup} from './math.js?v=20261124-exam';
 import {setupTopicStudy} from './topic-study.js';
 import {setupAptitudeStudy,aptitudeQuestions} from './aptitude-study.js';
 
@@ -133,7 +134,7 @@ function formulaCard(formula, compact=false) {
 function linkedFormulas(topic, refs) {
   return refs.length ? '<div class="formula-grid">'+refs.map(id=>formulaCard(formulaIndex[topic][id],true)).join('')+'</div>' : '';
 }
-function responsePrompt(response) {
+function responsePrompt(response, rich=false) {
   const {type,choices:rawChoices,unit,places}=response;
   const choices=rawChoices||['Figure (A)','Figure (B)','Figure (C)','Figure (D)'];
   if(type==='TEXT') return '';
@@ -145,19 +146,19 @@ function responsePrompt(response) {
   const guidance=type==='MSQ'?'One or more choices may be correct.':'Choose one answer.';
   return '<p class="response-note">'+escape(guidance)+'</p><ol type="A" class="pyq-options" aria-label="Answer options">'+
     choices.map((item,i)=>'<li><span class="option-letter">'+String.fromCharCode(65+i)+'</span><div class="option-value">'+
-      (typeof item==='string'?escape(item):equationMarkup(item.equation))+'</div></li>').join('')+'</ol>';
+      (typeof item==='string'?(rich?examTextMarkup(item):escape(item)):equationMarkup(item.equation))+'</div></li>').join('')+'</ol>';
 }
 function questionCard(q) {
   const topic=topicMap[q.topic];
   const prep=questionPrep[q.id]||{title:topic.name,idea:topic.scope,refs:[],approach:q.steps[0],trap:q.trap};
   const workings=calculations[q.id]||[];
-  return '<article class="card question" id="'+q.id+'"><header><h3>'+topic.name+'</h3><span class="meta">'+escape(q.ref)+'</span></header>'+
+  return '<article class="card question'+(enhancedExam(q)?' exam-question':'')+'" id="'+q.id+'"><header><h3>'+topic.name+'</h3><span class="meta">'+escape(q.ref)+'</span></header>'+
 
-    '<div class="qa"><div><h4>Question</h4><p>'+escape(q.prompt)+'</p>'+questionContextMarkup(q)+(q.figure?'<figure class="pyq-figure"><a href="'+escape(q.figure)+'" target="_blank" rel="noopener"><img src="'+escape(q.figure)+'" alt="'+escape(q.figureAlt)+'" loading="lazy"></a><figcaption>'+escape(q.figureCaption||'Question diagram · click to enlarge')+'</figcaption></figure>':'')+responsePrompt(q.response)+'</div>'+
+    '<div class="qa"><div><h4>Question</h4>'+questionPromptMarkup(q)+questionContextMarkup(q)+(q.figure?'<figure class="pyq-figure"><a href="'+escape(q.figure)+'" target="_blank" rel="noopener"><img src="'+escape(q.figure)+'" alt="'+escape(q.figureAlt)+'" loading="lazy"></a><figcaption>'+escape(q.figureCaption||'Question diagram · click to enlarge')+'</figcaption></figure>':'')+responsePrompt(q.response,enhancedExam(q))+'</div>'+
     '<div><h4>'+(q.unresolved?'Source limitation':q.excluded||q.marksToAll?'Official status and explanation':'Worked solution')+'</h4>'+workedSolutionMarkup(q)+
     (workings.length?'<div class="solution-math">'+workings.map(equationMarkup).join('')+'</div>':'')+
     finalAnswerMarkup(q)+
-    (prep.trap?'<p class="check-line"><strong>Common mistake</strong> '+escape(prep.trap)+'</p>':'')+(q.reviewNote?'<p class="notice"><strong>Source note:</strong> '+escape(q.reviewNote)+'</p>':'')+'</div></div>'+
+    (prep.trap?'<p class="check-line"><strong>Common mistake</strong> '+escape(prep.trap)+'</p>':'')+(q.reviewNote?'<p class="notice"><strong>Source note:</strong> '+(enhancedExam(q)?examTextMarkup(q.reviewNote):escape(q.reviewNote))+'</p>':'')+'</div></div>'+
     '<details class="question-lesson optional-pyq-theory"><summary>Theory behind this question</summary><h4>'+escape(prep.title)+'</h4><p>'+escape(prep.idea)+'</p>'+linkedFormulas(q.topic,prep.refs)+'<p><strong>How to start</strong> '+escape(prep.approach)+'</p><div class="actions">'+button('open-study-topic','Read the full topic notes',true,'data-id="'+q.topic+'" data-route="theory"')+'</div></details>'+
     '<footer>'+ext(archiveLink(q.file)+'#page='+q.page,'Open original PDF')+(q.sources||[]).map(url=>ext(url,'Supporting source')).join('')+
     button('save-item',state.saved[q.id]?'Remove from revision':'Save for revision',true,'data-id="'+q.id+'"')+

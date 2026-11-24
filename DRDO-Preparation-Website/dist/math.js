@@ -1,6 +1,6 @@
 // Renders the small equation notation used by the study content as native MathML.
 const escape = text => text.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-const namedOperators = new Set(['cos','tan','ln','log','lim','mod','det']);
+const namedOperators = new Set(['sin','cos','tan','cot','sec','csc','sinc','sinh','cosh','tanh','exp','ln','log','lim','mod','det','Re','Im','max','min','abs','sgn','erfc']);
 const units = new Set(['Hz','kHz','MHz','GHz','mV','mA','mW','dB','dBm','bit','Mbit','nm','eV']);
 const words = new Set(['SQNR','SNR','VSWR','Change','mean','new','old']);
 const tokenPattern = /\\[{}]|(?:frac|sqrt)(?=\{)|[A-Za-z]+|\d+(?:\.\d+)?|[^\s]/gu;

@@ -1,4 +1,5 @@
-import {equationMarkup,inlineEquationMarkup} from './math.js';
+import {enhancedExam,examGuide,examPromptMarkup,examWorkedSolutionMarkup,examAnswerMarkup} from './exam-presentation.js';
+import {equationMarkup,inlineEquationMarkup} from './math.js?v=20261124-exam';
 const escape=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const math=value=>({math:value});
 const text=value=>({text:value});
@@ -18,10 +19,12 @@ function block(item){
  if(item.conclusion)return '<p class="step-conclusion"><strong>'+escape(item.conclusion)+'</strong></p>';
  return '<p>'+inline(item.text)+'</p>';
 }
-export function questionContextMarkup(q){const guide=q.solutionGuide||solutionGuides[q.id];return guide?.meaning?'<div class="question-meaning"><h5>What the question asks</h5><p>'+escape(guide.meaning)+'</p></div>':'';}
+export function questionPromptMarkup(q){return enhancedExam(q)?examPromptMarkup(q):'<p>'+escape(q.prompt)+'</p>';}
+export function questionContextMarkup(q){const guide=q.solutionGuide||solutionGuides[q.id]||(enhancedExam(q)?examGuide(q):null);return guide?.meaning?'<div class="question-meaning"><h5>What the question asks</h5><p>'+escape(guide.meaning)+'</p></div>':'';}
 export function workedSolutionMarkup(q){
+ if(enhancedExam(q))return examWorkedSolutionMarkup(q);
  const guide=q.solutionGuide||solutionGuides[q.id];
  const sections=guide?.sections||q.steps.map((step,index)=>typeof step==='string'?{title:'Step '+(index+1),blocks:[text(step)]}:step);
  return '<div class="worked-explanation">'+(guide?.setup?'<div class="solution-setup"><h5>Combine the blocks</h5>'+guide.setup.map(block).join('')+'</div>':'')+sections.map((section,index)=>'<section class="solution-section"><h5>'+(guide?(index+1)+') ':'')+escape(section.title)+'</h5>'+section.blocks.map(block).join('')+'</section>').join('')+'</div>';
 }
-export function finalAnswerMarkup(q){const guide=q.solutionGuide||solutionGuides[q.id];return '<div class="answer-line boxed-final-answer"><strong>Final answer</strong><span>'+escape(guide?.answer||q.answer)+'</span></div>';}
+export function finalAnswerMarkup(q){const guide=q.solutionGuide||solutionGuides[q.id];const limited=q.unresolved||q.excluded||q.marksToAll;return '<div class="answer-line boxed-final-answer'+(enhancedExam(q)&&limited?' source-status-answer':'')+'"><strong>'+(enhancedExam(q)&&limited?'Answer status':'Final answer')+'</strong><span>'+(enhancedExam(q)?examAnswerMarkup(q):escape(guide?.answer||q.answer))+'</span></div>';}

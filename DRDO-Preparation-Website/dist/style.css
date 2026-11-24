@@ -201,3 +201,24 @@
 
 /* Expanded formula revision: scoped to the formula catalog. */
 .formula-search{margin:0 0 22px;max-width:820px}.formula-search label{display:block;font-weight:750;margin-bottom:7px}.formula-search input{width:100%;padding:12px 14px;border:1px solid #cbd7ea;border-radius:9px;background:#fff;color:var(--ink);font:inherit}.formula-search input:focus{outline:3px solid #9bb5ff;outline-offset:2px}.formula-search .meta{margin-top:8px}.formula-chapter{margin-top:25px}.formula-chapter h3{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}.formula-catalog .formula-card{padding:17px}.formula-catalog .formula-card h4{font-size:1.02rem}.formula-catalog .equation{padding:13px 9px;margin:13px 0}.formula-catalog .equation math{font-size:1.12rem}.formula-scope{margin-top:24px;line-height:1.7}.formula-catalog [hidden],.study-topics>.study-topic[hidden],#formula-empty[hidden]{display:none!important}
+
+/* ISRO / DRDO reading layout. Source images and PDFs retain their original bytes. */
+.question.exam-question .qa{grid-template-columns:minmax(0,1fr)}
+.question.exam-question .qa>div{padding:26px clamp(18px,3vw,38px)}
+.question.exam-question .qa>div+div{border-left:0;border-top:1px solid var(--line);background:#fff}
+.exam-question-statement{max-width:92ch;font-size:1.05rem;line-height:1.85}
+.exam-question-statement p{margin:10px 0 18px}
+.exam-question-statement .display-equation>.equation{padding:18px 12px;margin:20px 0 24px;background:#f6f8fd}
+.exam-question-statement .display-equation math{font-size:1.23rem;min-width:max-content}
+.exam-question math[display="inline"]{display:inline-math;vertical-align:baseline;font-size:1.1em}
+.exam-question .exam-worked-explanation{max-width:90ch;margin-inline:auto}
+.exam-question .exam-worked-explanation p{max-width:none}
+.exam-question .exam-worked-explanation .solution-section{margin-top:30px;padding-top:4px}
+.exam-question .exam-worked-explanation .solution-section+.solution-section{border-top:1px solid #e8edf5;padding-top:25px}
+.exam-question .exam-worked-explanation h5{color:#243d67;font-size:1.06rem}
+.exam-question .boxed-final-answer{max-width:90ch;margin:28px auto 0;padding:18px 21px}
+.exam-question .source-status-answer{background:#fff8eb;border-color:#ddc28d;color:#654a1d}
+.exam-question .pyq-options{max-width:1000px;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.exam-question .pyq-options li{padding:13px 15px;align-items:center;line-height:1.65}
+.exam-question .pyq-options .option-value{min-width:0;overflow-x:auto}
+@media(max-width:800px){.exam-question .pyq-options{grid-template-columns:minmax(0,1fr)}.question.exam-question .qa>div{padding:20px 16px}.exam-question-statement{font-size:1rem}.exam-question .exam-worked-explanation .equation math{font-size:1.08rem}}
